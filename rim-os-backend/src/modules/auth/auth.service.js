@@ -2,25 +2,37 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { pool } from "../../config/db.js";
 
-export const createUser = async (username, password, role) => {
-  const hash = await bcrypt.hash(password, 10);
-  await pool.query(
-    "INSERT INTO users(username,password,role) VALUES($1,$2,$3)",
-    [username, hash, role]
+export const registerUser = async (username, password, role) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const result = await pool.query(
+    `
+    INSERT INTO users (username, password, role)
+    VALUES ($1, $2, $3)
+    RETURNING id, username, role
+    `,
+    [username, hashedPassword, role]
   );
+
+  return result.rows[0];
 };
 
-export const authenticate = async (username, password) => {
+export const authenticateUser = async (username, password) => {
   const result = await pool.query(
-    "SELECT * FROM users WHERE username=$1",
+    "SELECT id, username, password, role FROM users WHERE username = $1",
     [username]
   );
 
-  if (!result.rows.length) return null;
+  if (result.rows.length === 0) {
+    return null;
+  }
 
   const user = result.rows[0];
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return null;
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return null;
+  }
 
   const token = jwt.sign(
     { id: user.id, role: user.role },
