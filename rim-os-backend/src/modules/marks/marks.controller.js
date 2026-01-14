@@ -1,31 +1,30 @@
-import { upsertMarks, getMarksForStudent } from "./marks.service.js";
+import { upsertComponentMark } from "./marks.service.js";
 
-export const uploadMarks = async (req, res) => {
+export const uploadMark = async (req, res) => {
   try {
-    const { studentId, courseId, internal, final } = req.body;
-    const facultyUserId = req.user.id;
-
-    const marks = await upsertMarks({
+    const {
       studentId,
       courseId,
-      internal,
-      final,
+      component,
+      score,
+      maxScore
+    } = req.body;
+
+    const facultyUserId = req.user.id;
+
+    const record = await upsertComponentMark({
+      studentId,
+      courseId,
+      component,
+      score,
+      maxScore,
       facultyUserId
     });
 
-    res.status(201).json(marks);
+    res.status(201).json(record);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to upload marks" });
   }
 };
 
-export const myMarks = async (req, res) => {
-  try {
-    const records = await getMarksForStudent(req.user.id);
-    res.json(records);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch marks" });
-  }
-};

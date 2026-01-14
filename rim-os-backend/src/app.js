@@ -10,6 +10,10 @@ import facultyRoutes from "./modules/faculty/faculty.routes.js";
 import enrollmentRoutes from "./modules/enrollments/enrollments.routes.js";
 import attendanceRoutes from "./modules/attendance/attendance.routes.js";
 import marksRoutes from "./modules/marks/marks.routes.js";
+import gpaRoutes from "./modules/gpa/gpa.routes.js";
+import transcriptRoutes from "./modules/transcripts/transcripts.routes.js";
+
+
 
 
 
@@ -31,6 +35,8 @@ app.use("/api/faculty", facultyRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/marks", marksRoutes);
+app.use("/api/gpa", gpaRoutes);
+app.use("/api/transcripts", transcriptRoutes);
 
 
 app.post("/__test", (req, res) => {
