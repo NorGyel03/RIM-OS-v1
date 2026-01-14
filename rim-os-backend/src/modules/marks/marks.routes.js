@@ -1,21 +1,22 @@
 import express from "express";
-import { addOffering, listOfferings } from "./courseOfferings.controller.js";
+import { uploadMarks, myMarks } from "./marks.controller.js";
 import { authenticateUser } from "../../middlewares/auth.middleware.js";
-import { authorizeRoles } from "../../middlewares/role.middleware.js";
+import { authorizeRole } from "../../middlewares/role.middleware.js";
 
 const router = express.Router();
 
 router.post(
   "/",
   authenticateUser,
-  authorizeRoles("admin", "registrar", "hod"),
-  addOffering
+  authorizeRole("faculty"),
+  uploadMarks
 );
 
 router.get(
-  "/",
+  "/me",
   authenticateUser,
-  listOfferings
+  authorizeRole("student"),
+  myMarks
 );
 
 export default router;

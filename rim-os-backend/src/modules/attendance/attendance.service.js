@@ -1,0 +1,55 @@
+import { pool } from "../../config/db.js";
+
+export const markAttendance = async ({
+  studentId,
+  courseId,
+  date,
+  status,
+  facultyUserId
+}) => {
+  // 🔹 map users → faculty
+  const facultyRes = await pool.query(
+    `SELECT id FROM faculty WHERE user_id = $1`,
+    [facultyUserId]
+  );
+
+  if (facultyRes.rowCount === 0) {
+    throw new Error("Faculty profile not found");
+  }
+
+  const facultyId = facultyRes.rows[0].id;
+
+  const result = await pool.query(
+    `
+    INSERT INTO attendance (student_id, course_id, date, status, marked_by)
+    VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT (student_id, course_id, date)
+    DO UPDATE SET status = EXCLUDED.status
+    RETURNING *
+    `,
+    [studentId, courseId, date, status, facultyId]
+  );
+
+  return result.rows[0];
+};
+
+export const getAttendanceForStudent = async (userId) => {
+  const result = await pool.query(
+    `
+    SELECT
+      c.code,
+      c.title,
+      a.date,
+      a.status
+    FROM attendance a
+    JOIN students s ON s.id = a.student_id
+    JOIN courses c ON c.id = a.course_id
+    WHERE s.user_id = $1
+    ORDER BY a.date
+    `,
+    [userId]
+  );
+
+  return result.rows;
+};
+
