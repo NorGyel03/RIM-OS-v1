@@ -18,6 +18,7 @@ import transcriptRoutes from "./modules/transcripts/transcripts.routes.js";
 
 
 
+
 dotenv.config();
 
 const app = express();
@@ -37,6 +38,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/marks", marksRoutes);
 app.use("/api/gpa", gpaRoutes);
 app.use("/api/transcripts", transcriptRoutes);
+
 
 
 app.post("/__test", (req, res) => {
