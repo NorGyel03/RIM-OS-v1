@@ -21,3 +21,14 @@ export const uploadMarks = async (payload) => {
   const res = await api.post("/marks", payload);
   return res.data;
 };
+
+export const getStudentsByCourse = async (courseId) => {
+  const res = await api.get(`/faculty/courses/${courseId}/students`);
+  return res.data;
+};
+
+export const uploadMark = async (data) => {
+  const res = await api.post("/marks", data);
+  return res.data;
+};
+

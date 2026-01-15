@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../auth/AuthContext";
-import { jwtDecode } from "jwt-decode"; // ✅ FIX
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -24,41 +23,31 @@ const Login = () => {
         password,
       });
 
-      console.log("FULL LOGIN RESPONSE:", res.data);
+      console.log("LOGIN RESPONSE DATA:", res.data);
 
       const token = res.data.token;
       if (!token) {
-        throw new Error("Token missing in response");
+        throw new Error("Token missing");
       }
 
-      // 🔑 Decode JWT to extract role
-      const decoded = jwtDecode(token);
+      // Decode role from JWT (Base64URL-safe)
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const payload = JSON.parse(atob(base64));
 
-      /*
-        Expected payload shape:
-        {
-          id: "...",
-          role: "student",
-          iat: ...,
-          exp: ...
-        }
-      */
-      const role = decoded.role;
+      console.log("JWT PAYLOAD:", payload);
+
+      const role = payload.role;
 
       if (!role) {
         throw new Error("Role missing in token");
       }
 
-      // 🔐 Store auth state
       login(token, role);
-
-      // 🚦 Redirect by role
       navigate(`/${role}`);
+
     } catch (err) {
-      console.error(
-        "Login failed:",
-        err.response?.data || err.message
-      );
+      console.error("Login failed:", err);
       setError("Invalid username or password");
     } finally {
       setLoading(false);

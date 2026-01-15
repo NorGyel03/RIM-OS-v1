@@ -1,13 +1,34 @@
-const FacultyLayout = ({ children }) => {
-  return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 bg-blue-800 text-white p-4">
-        <h2 className="text-lg font-bold">Faculty Panel</h2>
-      </aside>
+import { Outlet, Link } from "react-router-dom";
 
-      <main className="flex-1 bg-gray-100 p-6">
-        {children}
-      </main>
+const FacultyLayout = () => {
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Faculty Dashboard</h1>
+
+      <nav className="mb-4 space-x-4">
+        <Link
+          to="/faculty"
+          className="text-blue-600 hover:underline"
+        >
+          Home
+        </Link>
+
+        <Link
+          to="/faculty/attendance"
+          className="text-blue-600 hover:underline"
+        >
+          Attendance
+        </Link>
+
+        <Link to="/faculty/marks" className="text-blue-600 hover:underline">
+          Marks
+        </Link>
+
+
+
+      </nav>
+
+      <Outlet />
     </div>
   );
 };

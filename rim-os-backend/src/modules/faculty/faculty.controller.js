@@ -12,29 +12,60 @@ export const listFaculty = async (req, res) => {
 
 export const getMyCourses = async (req, res) => {
   try {
-    const facultyUserId = req.user.id;
+    // ADMIN → see all courses
+    if (req.user.role === "admin") {
+      const { rows } = await pool.query(
+        `
+        SELECT id, code, title, semester
+        FROM courses
+        ORDER BY code
+        `
+      );
+      return res.json(rows);
+    }
 
-    const result = await pool.query(
+    // FACULTY → see only assigned courses
+    const { rows } = await pool.query(
       `
-      SELECT
-        c.id,
-        c.code,
-        c.title,
-        c.semester
-      FROM courses c
-      JOIN programs p ON p.id = c.program_id
-      JOIN faculty f ON f.department_id = p.department_id
+      SELECT c.id, c.code, c.title, c.semester
+      FROM faculty f
+      JOIN programs p ON p.department_id = f.department_id
+      JOIN courses c ON c.program_id = p.id
       WHERE f.user_id = $1
-      ORDER BY c.semester, c.code
       `,
-      [facultyUserId]
+      [req.user.id]
     );
 
-    console.log("FACULTY COURSES FROM DB:", result.rows);
-
-    return res.status(200).json(result.rows);
+    res.json(rows);
   } catch (err) {
-    console.error("getMyCourses failed:", err);
-    return res.status(500).json({ message: "Failed to load courses" });
+    console.error("getMyCourses error:", err);
+    res.status(500).json({ message: "Failed to fetch courses" });
   }
 };
+
+
+export const getStudentsByCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    const { rows } = await pool.query(
+      `
+      SELECT DISTINCT
+        s.id AS student_id,
+        u.username
+      FROM enrollments e
+      JOIN students s ON s.id = e.student_id
+      JOIN users u ON u.id = s.user_id
+      JOIN courses c ON c.id = $1
+      `,
+      [courseId]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("getStudentsByCourse error:", err);
+    res.status(500).json({ message: "Failed to load students" });
+  }
+};
+
+

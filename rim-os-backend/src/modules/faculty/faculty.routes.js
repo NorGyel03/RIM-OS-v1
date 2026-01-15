@@ -4,6 +4,7 @@ import { authenticateUser } from "../../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../../middlewares/role.middleware.js";
 import { getMyCourses } from "./faculty.controller.js";
 import { authorizeRole } from "../../middlewares/role.middleware.js"; 
+import { getStudentsByCourse } from "./faculty.controller.js";
 
 const router = express.Router();
 
@@ -24,8 +25,16 @@ router.get(
 router.get(
   "/courses",
   authenticateUser,
-  authorizeRole("faculty"),
+  authorizeRole("faculty", "admin"),
   getMyCourses
 );
+
+router.get(
+  "/courses/:courseId/students",
+  authenticateUser,
+  authorizeRole("faculty", "admin"),
+  getStudentsByCourse
+);
+
 
 export default router;

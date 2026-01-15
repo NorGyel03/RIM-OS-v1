@@ -1,27 +1,28 @@
 import { createContext, useContext, useState } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
+  const [auth, setAuth] = useState(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
-    return token ? { token, role } : null;
+    return token && role ? { token, role } : null;
   });
 
   const login = (token, role) => {
     localStorage.setItem("token", token);
     localStorage.setItem("role", role);
-    setUser({ token, role });
+    setAuth({ token, role }); // ✅ THIS WAS MISSING
   };
 
   const logout = () => {
-    localStorage.clear();
-    setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setAuth(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ auth, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
