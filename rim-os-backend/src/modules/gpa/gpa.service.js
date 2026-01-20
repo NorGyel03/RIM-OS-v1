@@ -71,3 +71,25 @@ export const computeAndStoreFinalScore = async ({
 
   return result.rows[0];
 };
+
+export const getGPAForStudent = async (userId) => {
+  const { rows } = await pool.query(
+    `
+    SELECT
+      c.code,
+      c.title,
+      f.total_score,
+      f.grade,
+      f.semester,
+      f.academic_year
+    FROM final_scores f
+    JOIN students s ON s.id = f.student_id
+    JOIN courses c ON c.id = f.course_id
+    WHERE s.user_id = $1
+    ORDER BY f.academic_year, f.semester, c.code
+    `,
+    [userId]
+  );
+
+  return rows;
+};

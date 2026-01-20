@@ -12,8 +12,8 @@ import attendanceRoutes from "./modules/attendance/attendance.routes.js";
 import marksRoutes from "./modules/marks/marks.routes.js";
 import gpaRoutes from "./modules/gpa/gpa.routes.js";
 import transcriptRoutes from "./modules/transcripts/transcripts.routes.js";
-
-
+import adminRoutes from "./modules/admin/admin.routes.js";
+import departmentRoutes from "./modules/departments/departments.routes.js";
 
 
 
@@ -38,6 +38,8 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/marks", marksRoutes);
 app.use("/api/gpa", gpaRoutes);
 app.use("/api/transcripts", transcriptRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/departments", departmentRoutes);
 
 
 

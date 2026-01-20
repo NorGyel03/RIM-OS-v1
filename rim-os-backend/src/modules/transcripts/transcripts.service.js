@@ -9,6 +9,9 @@ const gradePoints = {
   "F": 0.0
 };
 
+/**
+ * Low-level DB fetch
+ */
 export const getTranscriptForStudent = async (userId) => {
   const { rows } = await pool.query(
     `
@@ -33,7 +36,7 @@ export const getTranscriptForStudent = async (userId) => {
 
 /**
  * High-level transcript builder
- * (this is what controller & PDF use)
+ * (JSON + PDF both use this)
  */
 export const buildTranscript = async (userId) => {
   const rows = await getTranscriptForStudent(userId);

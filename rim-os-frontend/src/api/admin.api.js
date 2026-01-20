@@ -1,0 +1,33 @@
+import api from "./axios";
+
+/* Programs & courses already exist if you need later */
+export const getAdminStudents = async () => {
+  const res = await api.get("/admin/students");
+  return res.data;
+};
+
+export const getAdminCourses = async () => {
+  const res = await api.get("/admin/courses");
+  return res.data;
+};
+
+export const enrollStudent = async ({ studentId, courseId }) => {
+  const res = await api.post("/admin/enroll", {
+    studentId,
+    courseId,
+  });
+  return res.data;
+};
+
+export const getPrograms = async () => {
+  const res = await api.get("/admin/programs");
+  return res.data;
+};
+
+export const createProgram = async ({ name, departmentId }) => {
+  const res = await api.post("/admin/programs", {
+    name,
+    departmentId,
+  });
+  return res.data;
+};

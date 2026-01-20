@@ -1,25 +1,15 @@
 import express from "express";
-import { computeFinal } from "./gpa.controller.js";
+import { listDepartments } from "./departments.controller.js";
 import { authenticateUser } from "../../middlewares/auth.middleware.js";
 import { authorizeRole } from "../../middlewares/role.middleware.js";
-import { myGPA } from "./gpa.controller.js";
-
 
 const router = express.Router();
 
-router.post(
-  "/compute",
+router.get(
+  "/",
   authenticateUser,
   authorizeRole("admin"),
-  computeFinal
+  listDepartments
 );
-
-router.get(
-  "/me",
-  authenticateUser,
-  authorizeRole("student"),
-  myGPA
-);
-
 
 export default router;

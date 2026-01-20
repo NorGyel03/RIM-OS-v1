@@ -14,6 +14,18 @@ const AdminLayout = () => {
         <Link to="/admin/gpa" className="text-blue-600 hover:underline">
           Compute GPA
         </Link>
+        <Link to="/admin/enrollments" className="text-blue-600">
+          Enroll Students
+        </Link>
+        <Link to="/admin/programs" className="text-blue-600">
+          Programs
+        </Link>
+        <Link
+          to="/admin/courses" className="text-blue-600">
+          Courses
+        </Link>
+
+
       </nav>
 
       <Outlet />
