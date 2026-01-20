@@ -9,6 +9,7 @@ import AdminLayout from "../layouts/AdminLayout";
 // Student pages
 import GPA from "../pages/student/GPA";
 import Transcript from "../pages/student/Transcript";
+import StudentDashboard from "../pages/student/Dashboard";
 
 // Faculty pages
 import Attendance from "../pages/faculty/Attendance";
@@ -19,6 +20,8 @@ import GPACompute from "../pages/admin/GPACompute";
 import Enrollments from "../pages/admin/Enrollments";
 import Programs from "../pages/admin/Programs";
 import Courses from "../pages/admin/Courses";
+import Users from "../pages/admin/Users";
+import AdminDashboard from "../pages/admin/Dashboard";
 
 
 const AppRoutes = () => {
@@ -28,48 +31,33 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
 
       {/* 👨‍🎓 STUDENT */}
-      <Route
-        path="/student"
-        element={
-          <ProtectedRoute role="student">
-            <StudentLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<div>Welcome, Student</div>} />
-        <Route path="gpa" element={<GPA />} />
-        <Route path="transcript" element={<Transcript />} />
+      <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+        <Route path="/student" element={<StudentLayout />}>
+          <Route index element={<StudentDashboard />} />
+          <Route path="gpa" element={<GPA />} />
+          <Route path="transcript" element={<Transcript />} />
+        </Route>
       </Route>
 
       {/* 👨‍🏫 FACULTY */}
-      <Route
-        path="/faculty"
-        element={
-          <ProtectedRoute role="faculty">
-            <FacultyLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<div>Welcome, Faculty</div>} />
-        <Route path="attendance" element={<Attendance />} />
-        <Route path="marks" element={<Marks />} />
+      <Route element={<ProtectedRoute allowedRoles={["faculty"]} />}>
+        <Route path="/faculty" element={<FacultyLayout />}>
+          <Route index element={<div>Welcome, Faculty</div>} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="marks" element={<Marks />} />
+        </Route>
       </Route>
 
       {/* 🧑‍💼 ADMIN */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute role="admin">
-            <AdminLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<div>Welcome, Admin</div>} />
-        <Route path="gpa" element={<GPACompute />} />
-        <Route path="enrollments" element={<Enrollments />} />
-        <Route path="programs" element={<Programs />} />
-        <Route path="courses" element={<Courses />} />
-
+      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="gpa" element={<GPACompute />} />
+          <Route path="enrollments" element={<Enrollments />} />
+          <Route path="programs" element={<Programs />} />
+          <Route path="courses" element={<Courses />} />
+          <Route path="users" element={<Users />} />
+        </Route>
       </Route>
 
       {/* 🔁 FALLBACK */}

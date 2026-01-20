@@ -40,6 +40,7 @@ app.use("/api/gpa", gpaRoutes);
 app.use("/api/transcripts", transcriptRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 

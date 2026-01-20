@@ -16,41 +16,50 @@ const GPA = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading GPA...</p>;
+    return <p className="p-6 text-slate-600">Loading GPA...</p>;
   }
 
   if (records.length === 0) {
-    return <p>No GPA records available.</p>;
+    return <p className="p-6 text-slate-600">No GPA records available.</p>;
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">My GPA</h2>
+    <div className="bg-white rounded-xl shadow p-6">
+      <h1 className="text-2xl font-bold text-slate-800 mb-4">
+        GPA Overview
+      </h1>
 
-      <table className="w-full border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Course</th>
-            <th className="border p-2">Semester</th>
-            <th className="border p-2">Academic Year</th>
-            <th className="border p-2">Score</th>
-            <th className="border p-2">Grade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {records.map((r, i) => (
-            <tr key={i}>
-              <td className="border p-2">
-                {r.code} — {r.title}
-              </td>
-              <td className="border p-2">{r.semester}</td>
-              <td className="border p-2">{r.academic_year}</td>
-              <td className="border p-2">{r.total_score}</td>
-              <td className="border p-2 font-semibold">{r.grade}</td>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead className="bg-slate-700 text-white">
+            <tr>
+              <th className="p-3 text-left">Course</th>
+              <th className="p-3 text-left">Score</th>
+              <th className="p-3 text-left">Grade</th>
+              <th className="p-3 text-left">Semester</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {records.map((r, i) => (
+              <tr key={i} className="border-t hover:bg-slate-50">
+                <td className="p-3 font-medium text-slate-800">
+                  {r.code}
+                </td>
+                <td className="p-3 text-slate-700">
+                  {r.total_score}
+                </td>
+                <td className="p-3 font-semibold">
+                  {r.grade}
+                </td>
+                <td className="p-3 text-slate-700">
+                  {r.semester}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

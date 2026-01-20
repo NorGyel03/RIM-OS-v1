@@ -2,7 +2,6 @@ import * as adminService from "./admin.service.js";
 import { createProgram as createProgramService } from "./admin.service.js";
 
 
-
 /* ---------- PROGRAMS ---------- */
 
 export const createProgram = async (req, res) => {
@@ -75,3 +74,158 @@ export const enrollStudent = async (req, res) => {
   }
 };
 
+/*------------CREATE STUDENT USERS------------*/
+import bcrypt from "bcrypt";
+import { pool } from "../../config/db.js";
+
+export const createStudent = async (req, res) => {
+  const { username, password, programId, admissionYear } = req.body;
+
+  if (!username || !password || !programId) {
+    return res.status(400).json({ message: "Missing fields" });
+  }
+
+  try {
+    const hashed = await bcrypt.hash(password, 10);
+
+    const userRes = await pool.query(
+      `
+      INSERT INTO users (username, password, role)
+      VALUES ($1, $2, 'student')
+      RETURNING id
+      `,
+      [username, hashed]
+    );
+
+    const userId = userRes.rows[0].id;
+
+    await pool.query(
+      `
+      INSERT INTO students (
+        user_id,
+        program_id,
+        enrollment_no,
+        admission_year,
+        status
+      )
+      VALUES ($1, $2, $3, $4, 'active')
+      `,
+      [
+        userId,
+        programId,
+        `RIM${admissionYear || 2025}-${userId.slice(0, 4)}`,
+        admissionYear || 2025
+      ]
+    );
+
+    res.status(201).json({ message: "Student created" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to create student" });
+  }
+};
+
+
+
+/*----------------CREATE FACULTY USERS ----------------*/
+export const createFaculty = async (req, res) => {
+  const { username, password, departmentId, designation } = req.body;
+
+  if (!username || !password || !departmentId) {
+    return res.status(400).json({ message: "Missing fields" });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    const userRes = await client.query(
+      `
+      INSERT INTO users (username, password, role)
+      VALUES ($1, $2, 'faculty')
+      RETURNING id
+      `,
+      [username, hashed]
+    );
+
+    const userId = userRes.rows[0].id;
+
+    await client.query(
+      `
+      INSERT INTO faculty (user_id, department_id, designation)
+      VALUES ($1, $2, $3)
+      `,
+      [userId, departmentId, designation || null]
+    );
+
+    await client.query("COMMIT");
+
+    res.status(201).json({ message: "Faculty created successfully" });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error(err);
+
+    if (err.code === "23505") {
+      return res
+        .status(409)
+        .json({ message: "Username already exists" });
+    }
+
+    res.status(500).json({ message: "Failed to create faculty" });
+  } finally {
+    client.release();
+  }
+};
+
+
+export const getDepartments = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, name FROM departments ORDER BY name"
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch departments" });
+  }
+};
+
+export const listFaculty = async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT
+        u.id AS user_id,
+        u.username,
+        u.email,
+        f.id AS faculty_id,
+        f.designation,
+        d.name AS department
+      FROM users u
+      LEFT JOIN faculty f ON f.user_id = u.id
+      LEFT JOIN departments d ON d.id = f.department_id
+      WHERE u.role = 'faculty'
+      ORDER BY u.username
+    `);
+
+    res.json(rows);
+  } catch (err) {
+    console.error("List faculty failed:", err);
+    res.status(500).json({ message: "Failed to load faculty list" });
+  }
+};
+
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, username, role FROM users ORDER BY username`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Get users failed:", err);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
