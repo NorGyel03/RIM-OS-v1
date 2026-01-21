@@ -193,30 +193,6 @@ export const getDepartments = async (req, res) => {
   }
 };
 
-export const listFaculty = async (req, res) => {
-  try {
-    const { rows } = await pool.query(`
-      SELECT
-        u.id AS user_id,
-        u.username,
-        u.email,
-        f.id AS faculty_id,
-        f.designation,
-        d.name AS department
-      FROM users u
-      LEFT JOIN faculty f ON f.user_id = u.id
-      LEFT JOIN departments d ON d.id = f.department_id
-      WHERE u.role = 'faculty'
-      ORDER BY u.username
-    `);
-
-    res.json(rows);
-  } catch (err) {
-    console.error("List faculty failed:", err);
-    res.status(500).json({ message: "Failed to load faculty list" });
-  }
-};
-
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -229,3 +205,81 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch users" });
   }
 };
+
+
+export const listFaculty = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `
+      SELECT
+        f.id,
+        u.username,
+        f.designation
+      FROM faculty f
+      JOIN users u ON u.id = f.user_id
+      ORDER BY u.username
+      `
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("List faculty failed:", err);
+    res.status(500).json({ message: "Failed to fetch faculty" });
+  }
+};
+
+export const listPendingUsers = async (req, res) => {
+  const { rows } = await pool.query(
+    `
+    SELECT id, username, role, created_at
+    FROM users
+    WHERE is_active = false
+    ORDER BY created_at
+    `
+  );
+  res.json(rows);
+};
+
+
+export const approveUser = async (req, res) => {
+  const { userId } = req.params;
+
+  await pool.query(
+    `
+    UPDATE users
+    SET is_active = true
+    WHERE id = $1
+    `,
+    [userId]
+  );
+
+  res.json({ message: "User approved" });
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Safety: only delete inactive users
+    const result = await pool.query(
+      `
+      DELETE FROM users
+      WHERE id = $1 AND is_active = false
+      RETURNING id
+      `,
+      [userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res
+        .status(400)
+        .json({ message: "User not found or already active" });
+    }
+
+    res.json({ message: "User rejected and deleted" });
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json({ message: "Failed to delete user" });
+  }
+};
+

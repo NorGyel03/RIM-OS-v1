@@ -79,7 +79,7 @@ const Courses = () => {
       {/* Create Course */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-4 rounded shadow mb-6"
+        className="bg-black p-4 rounded shadow mb-6"
       >
         <h3 className="font-semibold mb-3">Create Course</h3>
 

@@ -1,76 +1,79 @@
 import express from "express";
+
+/* Controllers */
 import {
   createProgram,
   listPrograms,
   createCourse,
+  getCourses,
   listStudents,
   enrollStudent,
-  getCourses
-  
+  createStudent,
+  createFaculty,
+  getDepartments,
+  listFaculty,
+  getAllUsers,
+  listPendingUsers,
+  approveUser,
+  deleteUser
 } from "./admin.controller.js";
 
+
+/* Middleware */
 import { authenticateUser } from "../../middlewares/auth.middleware.js";
 import { authorizeRole } from "../../middlewares/role.middleware.js";
 
-import {
-  createStudent,
-  createFaculty,
-} from "./admin.controller.js";
-
-import { getDepartments } from "./admin.controller.js";
-
-
-
-
 const router = express.Router();
 
+/**
+ * 🔐 GLOBAL ADMIN PROTECTION
+ * All routes below require:
+ * - authenticated user
+ * - admin role
+ */
 router.use(authenticateUser, authorizeRole("admin"));
 
-/* Programs */
+/* =========================
+   PROGRAMS
+========================= */
 router.post("/programs", createProgram);
 router.get("/programs", listPrograms);
 
-/* Courses */
-router.post("/courses", authenticateUser, createCourse);
+/* =========================
+   COURSES
+========================= */
+router.post("/courses", createCourse);
+router.get("/courses", getCourses);
 
-router.get(
-  "/courses", authenticateUser, getCourses);
-
-/* Students */
+/* =========================
+   STUDENTS
+========================= */
 router.get("/students", listStudents);
+router.post("/students", createStudent);
 
-/* Enrollments */
+/* =========================
+   FACULTY
+========================= */
+router.get("/faculty", listFaculty);
+router.post("/faculty", createFaculty);
+
+/* =========================
+   ENROLLMENTS
+========================= */
 router.post("/enroll", enrollStudent);
 
+/* =========================
+   DEPARTMENTS
+========================= */
+router.get("/departments", getDepartments);
 
-router.post(
-  "/students",
-  authenticateUser,
-  authorizeRole("admin"),
-  createStudent
-);
-
-router.post(
-  "/faculty",
-  authenticateUser,
-  authorizeRole("admin"),
-  createFaculty
-);
-
-router.get(
-  "/departments",
-  authenticateUser,
-  authorizeRole("admin"),
-  getDepartments
-);
-
-import { getAllUsers } from "./admin.controller.js";
-
-router.get(
-  "/users",
-  authenticateUser,
-  authorizeRole("admin"),
-  getAllUsers
+/* =========================
+   USERS & APPROVALS
+========================= */
+router.get("/users", getAllUsers);
+router.get("/pending-users", listPendingUsers);
+router.post("/approve-user/:userId", approveUser);
+router.delete("/reject-user/:userId",authenticateUser,authorizeRole("admin"),deleteUser
 );
 
 export default router;

@@ -10,7 +10,7 @@ const gradePoints = {
 };
 
 /**
- * Low-level DB fetch
+ * Low-level fetch including course credit
  */
 export const getTranscriptForStudent = async (userId) => {
   const { rows } = await pool.query(
@@ -20,6 +20,7 @@ export const getTranscriptForStudent = async (userId) => {
       fs.academic_year,
       c.code,
       c.title,
+      c.credit,
       fs.total_score,
       fs.grade
     FROM final_scores fs
@@ -35,45 +36,51 @@ export const getTranscriptForStudent = async (userId) => {
 };
 
 /**
- * High-level transcript builder
- * (JSON + PDF both use this)
+ * Credit-based transcript builder (ACADEMICALLY CORRECT)
  */
 export const buildTranscript = async (userId) => {
   const rows = await getTranscriptForStudent(userId);
 
-  const semesterGPA = {};
-  let totalPoints = 0;
-  let totalCourses = 0;
+  const semesterMap = {};
+  let totalWeightedPoints = 0;
+  let totalCredits = 0;
 
   for (const r of rows) {
-    const key = `${r.academic_year}-S${r.semester}`;
     const gp = gradePoints[r.grade] ?? 0;
+    const credit = r.credit;
+    const key = `${r.academic_year}-S${r.semester}`;
 
-    if (!semesterGPA[key]) {
-      semesterGPA[key] = { points: 0, count: 0 };
+    // semester aggregation
+    if (!semesterMap[key]) {
+      semesterMap[key] = {
+        weightedPoints: 0,
+        credits: 0
+      };
     }
 
-    semesterGPA[key].points += gp;
-    semesterGPA[key].count += 1;
+    semesterMap[key].weightedPoints += gp * credit;
+    semesterMap[key].credits += credit;
 
-    totalPoints += gp;
-    totalCourses += 1;
+    // cumulative aggregation
+    totalWeightedPoints += gp * credit;
+    totalCredits += credit;
   }
 
-  const formattedSemesterGPA = {};
-  for (const key in semesterGPA) {
-    formattedSemesterGPA[key] = Number(
-      (semesterGPA[key].points / semesterGPA[key].count).toFixed(2)
+  // compute semester GPA
+  const semesterGPA = {};
+  for (const key in semesterMap) {
+    semesterGPA[key] = Number(
+      (semesterMap[key].weightedPoints / semesterMap[key].credits).toFixed(2)
     );
   }
 
-  const cgpa = totalCourses
-    ? Number((totalPoints / totalCourses).toFixed(2))
+  const cgpa = totalCredits
+    ? Number((totalWeightedPoints / totalCredits).toFixed(2))
     : 0;
 
   return {
     courses: rows,
-    semesterGPA: formattedSemesterGPA,
+    semesterGPA,
     cgpa
   };
 };

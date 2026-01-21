@@ -1,8 +1,26 @@
 import { pool } from "../../config/db.js";
 
-export const getDepartments = async () => {
+export const createDepartment = async ({ name, code }) => {
   const { rows } = await pool.query(
-    `SELECT id, name FROM departments ORDER BY name`
+    `
+    INSERT INTO departments (name, code)
+    VALUES ($1, $2)
+    RETURNING id, name, code
+    `,
+    [name, code]
   );
+
+  return rows[0];
+};
+
+export const getAllDepartments = async () => {
+  const { rows } = await pool.query(
+    `
+    SELECT id, name, code
+    FROM departments
+    ORDER BY name
+    `
+  );
+
   return rows;
 };

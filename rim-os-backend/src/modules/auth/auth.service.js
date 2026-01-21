@@ -3,33 +3,47 @@ import jwt from "jsonwebtoken";
 import { pool } from "../../config/db.js";
 
 export const registerUser = async (username, password, role) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  if (!password) {
+    throw new Error("Password is missing");
+  }
 
-  const result = await pool.query(
+  const hashedPassword = await bcrypt.hash(password, 10); // ✅ salt added
+
+  const { rows } = await pool.query(
     `
-    INSERT INTO users (username, password, role)
-    VALUES ($1, $2, $3)
-    RETURNING id, username, role
+    INSERT INTO users (username, password, role, is_active)
+    VALUES ($1, $2, $3, false)
+    RETURNING id, username, role, is_active
     `,
     [username, hashedPassword, role]
   );
 
-  return result.rows[0];
+  return rows[0];
 };
 
+
 export const authenticateUser = async (username, password) => {
-  const result = await pool.query(
-    "SELECT id, username, password, role FROM users WHERE username = $1",
+  const { rows } = await pool.query(
+    `
+    SELECT id, password, role, is_active
+    FROM users
+    WHERE username = $1
+    `,
     [username]
   );
 
-  if (result.rows.length === 0) {
+  if (rows.length === 0) {
     return null;
   }
 
-  const user = result.rows[0];
+  const user = rows[0];
+
+  if (!user.is_active) {
+    return null;
+  }
 
   const isMatch = await bcrypt.compare(password, user.password);
+
   if (!isMatch) {
     return null;
   }

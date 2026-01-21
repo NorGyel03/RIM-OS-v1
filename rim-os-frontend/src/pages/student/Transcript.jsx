@@ -33,6 +33,7 @@ const Transcript = () => {
         <thead className="bg-gray-100">
           <tr>
             <th className="border p-2">Course</th>
+            <th className="border p-2">Credit</th>
             <th className="border p-2">Semester</th>
             <th className="border p-2">Academic Year</th>
             <th className="border p-2">Score</th>
@@ -42,9 +43,8 @@ const Transcript = () => {
         <tbody>
           {data.courses.map((c, i) => (
             <tr key={i}>
-              <td className="border p-2">
-                {c.code} — {c.title}
-              </td>
+              <td className="border p-2">{c.code} — {c.title} </td>
+              <td className="border p-2">{c.credit}</td>
               <td className="border p-2">{c.semester}</td>
               <td className="border p-2">{c.academic_year}</td>
               <td className="border p-2">{c.total_score}</td>

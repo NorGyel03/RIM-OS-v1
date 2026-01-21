@@ -1,15 +1,8 @@
 import api from "./axios";
 
 export const getMyCourses = async () => {
-  const res = await api.get("/faculty/courses");
-
-  console.log("RAW courses response:", res.data);
-
-  if (Array.isArray(res.data)) return res.data;
-  if (Array.isArray(res.data.rows)) return res.data.rows;
-  if (Array.isArray(res.data.data)) return res.data.data;
-
-  return [];
+  const res = await api.get("/faculty-courses/me");
+  return res.data;
 };
 
 export const markAttendance = async (payload) => {

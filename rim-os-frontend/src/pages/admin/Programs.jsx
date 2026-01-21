@@ -69,7 +69,7 @@ const Programs = () => {
       )}
 
       {/* Create Program */}
-      <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow w-full max-w-md">
+      <form onSubmit={handleSubmit} className="bg-black p-4 rounded shadow w-full max-w-md">
 
         <h2 className="text-lg font-semibold mb-4">Create Program</h2>
 

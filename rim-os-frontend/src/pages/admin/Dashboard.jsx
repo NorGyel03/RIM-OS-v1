@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">
+        <h1 className="text-3xl font-bold text-blue-700">
           Admin Dashboard
         </h1>
         <p className="text-slate-500 mt-1">

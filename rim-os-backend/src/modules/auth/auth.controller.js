@@ -1,5 +1,8 @@
 import { authenticateUser, registerUser } from "./auth.service.js";
 
+/**
+ * REGISTER (PENDING USER)
+ */
 export const register = async (req, res) => {
   try {
     const { username, password, role } = req.body;
@@ -11,7 +14,7 @@ export const register = async (req, res) => {
     const user = await registerUser(username, password, role);
 
     res.status(201).json({
-      message: "User registered successfully",
+      message: "Registration successful. Await admin approval.",
       user,
     });
   } catch (error) {
@@ -24,12 +27,17 @@ export const register = async (req, res) => {
   }
 };
 
+/**
+ * LOGIN
+ */
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ message: "Username and password required" });
+      return res
+        .status(400)
+        .json({ message: "Username and password required" });
     }
 
     const token = await authenticateUser(username, password);

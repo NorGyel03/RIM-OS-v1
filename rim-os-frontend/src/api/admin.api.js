@@ -31,3 +31,14 @@ export const createProgram = async ({ name, departmentId }) => {
   });
   return res.data;
 };
+
+
+export const getPendingUsers = () =>
+  api.get("/admin/pending-users");
+
+export const approveUser = (userId) =>
+  api.post(`/admin/approve-user/${userId}`);
+
+export const rejectUser = (userId) =>
+  api.delete(`/admin/reject-user/${userId}`);
+
