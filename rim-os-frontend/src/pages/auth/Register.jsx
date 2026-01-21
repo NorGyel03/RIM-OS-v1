@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { registerUser } from "../../api/auth.api";
 
 const Register = () => {
@@ -7,57 +8,110 @@ const Register = () => {
     password: "",
     role: "student",
   });
-  const [msg, setMsg] = useState("");
 
-  const submit = async (e) => {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMsg("");
+    setMessage("");
+    setError("");
+    setLoading(true);
 
     try {
       await registerUser(form);
-      setMsg("Registration submitted. Await admin approval.");
+      setMessage(
+        "Registration successful. Your account will be activated after admin approval."
+      );
+      setForm({ username: "", password: "", role: "student" });
     } catch (err) {
-      setMsg(err.response?.data?.message || "Registration failed");
+      setError(
+        err.response?.data?.message || "Registration failed"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={submit} className="p-6 max-w-sm mx-auto">
-      <h2 className="text-xl mb-4">Register</h2>
-
-      <input
-        placeholder="Username"
-        className="border p-2 w-full mb-2"
-        onChange={(e) =>
-          setForm({ ...form, username: e.target.value })
-        }
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        className="border p-2 w-full mb-2"
-        onChange={(e) =>
-          setForm({ ...form, password: e.target.value })
-        }
-      />
-
-      <select
-        className="border p-2 w-full mb-3"
-        onChange={(e) =>
-          setForm({ ...form, role: e.target.value })
-        }
+    <div className="min-h-screen flex items-center justify-center bg-blue-950">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow w-80"
       >
-        <option value="student">Student</option>
-        <option value="faculty">Faculty</option>
-      </select>
+        <h1 className="text-xl text-gray-600 font-bold mb-1 text-center">
+          Create Account
+        </h1>
 
-      <button className="bg-blue-600 text-white w-full p-2">
-        Register
-      </button>
+        <p className="text-sm text-gray-600 mb-4 text-center">
+          Registration requires admin approval
+        </p>
 
-      {msg && <p className="mt-3 text-sm">{msg}</p>}
-    </form>
+        {message && (
+          <div className="text-green-600 text-sm mb-3 text-center">
+            {message}
+          </div>
+        )}
+
+        {error && (
+          <div className="text-red-600 text-sm mb-3 text-center">
+            {error}
+          </div>
+        )}
+
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          className="border p-2 w-full mb-3"
+          value={form.username}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="border p-2 w-full mb-3"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+
+        <select
+          name="role"
+          className="border p-2 w-full mb-4"
+          value={form.role}
+          onChange={handleChange}
+        >
+          <option value="student">Student</option>
+          <option value="faculty">Faculty</option>
+        </select>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 text-white w-full py-2 rounded disabled:opacity-50"
+        >
+          {loading ? "Registering..." : "Register"}
+        </button>
+
+        <div className="mt-4 text-center">
+          <Link
+            to="/login"
+            className="text-blue-600 hover:underline text-sm"
+          >
+            Back to Login
+          </Link>
+        </div>
+      </form>
+    </div>
   );
 };
 

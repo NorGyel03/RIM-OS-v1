@@ -9,7 +9,6 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    // Load lightweight stats (safe calls)
     Promise.all([
       api.get("/admin/programs"),
       api.get("/admin/courses"),
@@ -22,54 +21,62 @@ const AdminDashboard = () => {
           users: u.data.length
         });
       })
-      .catch((err) => {
-        console.error("Failed to load admin stats", err);
-      });
+      .catch(console.error);
   }, []);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-blue-700">
-          Admin Dashboard
-        </h1>
-        <p className="text-slate-500 mt-1">
-          System overview & management
-        </p>
-      </div>
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Programs" value={stats.programs} />
-        <StatCard title="Courses" value={stats.courses} />
-        <StatCard title="Users" value={stats.users} />
-      </div>
+        {/* HEADER */}
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Admin Dashboard
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Academic system administration
+          </p>
+        </div>
 
-      {/* Admin Actions */}
-      <div className="bg-white rounded-xl shadow p-6">
-        <h2 className="text-xl font-semibold text-slate-800 mb-2">
-          Administrative Actions
-        </h2>
+        {/* STATS TILES */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <StatTile title="Programs" value={stats.programs} />
+          <StatTile title="Courses" value={stats.courses} />
+          <StatTile title="Users" value={stats.users} />
+        </div>
 
-        <ul className="list-disc list-inside text-slate-600 space-y-1">
-          <li>Create & manage programs</li>
-          <li>Create courses and assign semesters</li>
-          <li>Enroll students into courses</li>
-          <li>Compute final GPA</li>
-        </ul>
+        {/* ACTION TILES */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-4">
+          <ActionTile title="Departments" subtitle="Manage departments" />
+          <ActionTile title="Programs" subtitle="Create & edit programs" />
+          <ActionTile title="Courses" subtitle="Course catalog" />
+          <ActionTile title="Assign Faculty" subtitle="Faculty allocation" />
+          <ActionTile title="Enroll Students" subtitle="Course enrollment" />
+          <ActionTile title="Compute GPA" subtitle="Final GPA processing" />
+          <ActionTile title="Approvals" subtitle="New user requests" />
+        </div>
+
       </div>
     </div>
   );
 };
 
-const StatCard = ({ title, value }) => (
-  <div className="bg-white rounded-xl shadow p-6">
-    <p className="text-slate-500 text-sm">{title}</p>
-    <p className="text-3xl font-bold text-slate-800 mt-2">
+/* ---------------- COMPONENTS ---------------- */
+
+const StatTile = ({ title, value }) => (
+  <div className="bg-white border border-slate-200 rounded-lg p-5">
+    <p className="text-sm text-slate-500">{title}</p>
+    <p className="text-3xl font-semibold text-slate-900 mt-2">
       {value}
     </p>
   </div>
+);
+
+const ActionTile = ({ title, subtitle }) => (
+  <button className="text-left bg-white border border-slate-200 rounded-lg p-5 hover:border-indigo-300 transition">
+    <p className="font-medium text-slate-900">{title}</p>
+    <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
+  </button>
 );
 
 export default AdminDashboard;

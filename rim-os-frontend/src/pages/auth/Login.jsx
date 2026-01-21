@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../auth/AuthContext";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -112,6 +113,18 @@ const Login = () => {
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
+
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600">
+              Don’t have an account?
+            </p>
+            <Link
+              to="/register"
+              className="text-blue-600 hover:underline font-medium"
+            >
+              Register here
+            </Link>
+          </div>
         </form>
 
         {/* Footer */}
@@ -119,6 +132,7 @@ const Login = () => {
           © {new Date().getFullYear()} RIM OS · All rights reserved
         </div>
       </div>
+      
     </div>
 );
 
