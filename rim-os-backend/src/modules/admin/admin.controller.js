@@ -3,6 +3,8 @@ import { createProgram as createProgramService } from "./admin.service.js";
 
 
 /* ---------- PROGRAMS ---------- */
+console.log("🔥 admin.controller.js LOADED");
+
 
 export const createProgram = async (req, res) => {
   try {
@@ -283,3 +285,78 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+
+/* =========================
+   GET USERS WITHOUT PROFILE
+========================= */
+export const getUnassignedUsers = async (req, res) => {
+  try {
+    const users = await adminService.getUnassignedUsers();
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to load users" });
+  }
+};
+
+/* =========================
+   CREATE STUDENT PROFILE
+========================= */
+export const createStudentProfile = async (req, res) => {
+  console.log("🔥 createStudentProfile CONTROLLER HIT");
+
+  const { userId, programId, enrollmentNo, admissionYear } = req.body;
+
+  if (!userId || !programId || !enrollmentNo || !admissionYear) {
+    return res.status(400).json({
+      message: "Missing fields",
+      received: req.body,
+    });
+  }
+
+  try {
+    await adminService.createStudentProfile({
+      userId,
+      programId,
+      enrollmentNo,
+      admissionYear,
+    });
+
+    res.json({ message: "Student profile created" });
+  } catch (err) {
+  console.error("❌ FULL DB ERROR:", err);
+
+  return res.status(500).json({
+    message: err.message,
+    code: err.code,
+    detail: err.detail,
+    constraint: err.constraint,
+  });
+}
+
+};
+
+
+/* =========================
+   CREATE FACULTY PROFILE
+========================= */
+export const createFacultyProfile = async (req, res) => {
+  try {
+    const { userId, departmentId, designation } = req.body;
+
+    if (!userId || !departmentId) {
+      return res.status(400).json({ message: "Missing fields" });
+    }
+
+    await adminService.createFacultyProfile({
+      userId,
+      departmentId,
+      designation,
+    });
+
+    res.json({ message: "Faculty profile created" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to create faculty profile" });
+  }
+};

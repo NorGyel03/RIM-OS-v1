@@ -3,41 +3,44 @@ import api from "../../api/axios";
 
 const Users = () => {
   /* =========================
-     SHARED STATE
+     SHARED DATA
   ========================= */
+  const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [programs, setPrograms] = useState([]);
-  const [users, setUsers] = useState([]);
 
-  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState("");
 
   /* =========================
-     CREATE STUDENT FORM
+     STUDENT FORM
   ========================= */
   const [studentForm, setStudentForm] = useState({
-    username: "",
-    password: "",
     programId: "",
+    enrollmentNo: "",
+    admissionYear: "",
   });
 
   /* =========================
-     CREATE FACULTY FORM
+     FACULTY FORM
   ========================= */
   const [facultyForm, setFacultyForm] = useState({
-    username: "",
-    password: "",
     departmentId: "",
     designation: "",
   });
 
   /* =========================
-     LOAD INITIAL DATA
+     LOAD DATA
   ========================= */
   useEffect(() => {
+    loadUsers();
     loadDepartments();
     loadPrograms();
-    loadUsers();
   }, []);
+
+  const loadUsers = async () => {
+    const res = await api.get("/admin/users?unassigned=true");
+    setUsers(res.data);
+  };
 
   const loadDepartments = async () => {
     const res = await api.get("/admin/departments");
@@ -49,111 +52,112 @@ const Users = () => {
     setPrograms(res.data);
   };
 
-  const loadUsers = async () => {
-    try {
-      const res = await api.get("/admin/users");
-      setUsers(res.data);
-    } catch (err) {
-      console.error("Failed to load users", err);
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
   /* =========================
-     CREATE STUDENT
+     CREATE STUDENT PROFILE
   ========================= */
   const handleCreateStudent = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const { username, password, programId } = studentForm;
-    if (!username || !password || !programId) {
-      alert("All student fields are required");
-      return;
-    }
+  const { programId, enrollmentNo, admissionYear } = studentForm;
 
-    try {
-      await api.post("/admin/students", {
-        username,
-        password,
-        programId,
-      });
-      alert("Student created");
-      setStudentForm({ username: "", password: "", programId: "" });
-      loadUsers();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create student");
-    }
-  };
+  if (!selectedUserId || !programId || !enrollmentNo || !admissionYear) {
+    alert("All fields are required");
+    return;
+  }
+
+  try {
+
+    await api.post("/admin/create-student-profile", {
+      userId: selectedUserId, // ✅ FIX HERE
+      programId,
+      enrollmentNo,
+      admissionYear: Number(admissionYear),
+    });
+
+    alert("Student profile created successfully");
+
+    setStudentForm({
+      programId: "",
+      enrollmentNo: "",
+      admissionYear: "",
+    });
+    setSelectedUserId("");
+  } catch (err) {
+    console.error("❌ Create student failed:", err.response?.data || err);
+    alert(err.response?.data?.message || "Failed to create student");
+  }
+};
+
 
   /* =========================
-     CREATE FACULTY
+     CREATE FACULTY PROFILE
   ========================= */
   const handleCreateFaculty = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const { username, password, departmentId, designation } = facultyForm;
-    if (!username || !password || !departmentId) {
-      alert("All faculty fields are required");
-      return;
-    }
+  const { departmentId, designation } = facultyForm;
 
-    try {
-      await api.post("/admin/faculty", {
-        username,
-        password,
-        departmentId,
-        designation,
-      });
-      alert("Faculty created");
-      setFacultyForm({
-        username: "",
-        password: "",
-        departmentId: "",
-        designation: "",
-      });
-      loadUsers();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create faculty");
-    }
-  };
+  if (!selectedUserId || !departmentId) {
+    alert("User and department are required");
+    return;
+  }
+
+  try {
+    console.log("🔥 Create Faculty clicked");
+
+    await api.post("/admin/create-faculty-profile", {
+      userId: selectedUserId, // ✅ FIX
+      departmentId,
+      designation,
+    });
+
+    alert("Faculty profile created successfully");
+
+    setFacultyForm({
+      departmentId: "",
+      designation: "",
+    });
+    setSelectedUserId("");
+  } catch (err) {
+    console.error("❌ Create faculty failed:", err.response?.data || err);
+    alert(err.response?.data?.message || "Failed to create faculty");
+  }
+};
+ 
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">
-        User Management
+    <div className="max-w-6xl mx-auto space-y-10">
+
+      <h2 className="text-2xl font-semibold text-white">
+        Assign Student / Faculty Profiles
       </h2>
 
-      {/* =========================
-          CREATE STUDENT
-      ========================= */}
-      <div className="bg-white p-4 rounded shadow mb-6">
-        <h3 className="font-semibold mb-3">Create Student</h3>
+      {/* SELECT USER */}
+      <div className="bg-white border rounded-lg p-6 " >
+        <h3 className=" text-black font-medium mb-3" >Select User</h3>
 
-        <form onSubmit={handleCreateStudent}>
-          <input
-            className="border p-2 w-full mb-2"
-            placeholder="Username"
-            value={studentForm.username}
-            onChange={(e) =>
-              setStudentForm({ ...studentForm, username: e.target.value })
-            }
-          />
+        <select
+          className="border p-2 w-full"
+          value={selectedUserId}
+          onChange={(e) => setSelectedUserId(e.target.value)}
+        >
+          <option value="">Select User</option>
+          {users.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.username}
+            </option>
+          ))}
+        </select>
+      </div>
 
-          <input
-            type="password"
-            className="border p-2 w-full mb-2"
-            placeholder="Password"
-            value={studentForm.password}
-            onChange={(e) =>
-              setStudentForm({ ...studentForm, password: e.target.value })
-            }
-          />
+      {/* STUDENT PROFILE */}
+      <div className="bg-white border rounded-lg p-6">
+        <h3 className="text-black font-medium mb-4">Create Student Profile</h3>
 
+        <form onSubmit={handleCreateStudent} className="space-y-3">
+          
           <select
-            className="border p-2 w-full mb-3"
+            className="border p-2 w-full"
             value={studentForm.programId}
             onChange={(e) =>
               setStudentForm({ ...studentForm, programId: e.target.value })
@@ -167,40 +171,45 @@ const Users = () => {
             ))}
           </select>
 
-          <button className="bg-blue-600 text-white px-4 py-2 rounded">
-            Create Student
+          <input
+            className="border p-2 w-full"
+            placeholder="Enrollment Number"
+            value={studentForm.enrollmentNo}
+            onChange={(e) =>
+              setStudentForm({
+                ...studentForm,
+                enrollmentNo: e.target.value,
+              })
+            }
+          />
+
+          <input
+            type="number"
+            className="border p-2 w-full"
+            placeholder="Admission Year"
+            value={studentForm.admissionYear}
+            onChange={(e) =>
+              setStudentForm({
+                ...studentForm,
+                admissionYear: e.target.value,
+              })
+            }
+          />
+
+          
+          <button className="bg-indigo-600 text-white px-4 py-2 rounded">
+            Create Student Profile
           </button>
         </form>
       </div>
 
-      {/* =========================
-          CREATE FACULTY
-      ========================= */}
-      <div className="bg-white p-4 rounded shadow mb-6">
-        <h3 className="font-semibold mb-3">Create Faculty</h3>
+      {/* FACULTY PROFILE */}
+      <div className="bg-white border rounded-lg p-6">
+        <h3 className="font-medium mb-4 text-black">Create Faculty Profile</h3>
 
-        <form onSubmit={handleCreateFaculty}>
-          <input
-            className="border p-2 w-full mb-2"
-            placeholder="Username"
-            value={facultyForm.username}
-            onChange={(e) =>
-              setFacultyForm({ ...facultyForm, username: e.target.value })
-            }
-          />
-
-          <input
-            type="password"
-            className="border p-2 w-full mb-2"
-            placeholder="Password"
-            value={facultyForm.password}
-            onChange={(e) =>
-              setFacultyForm({ ...facultyForm, password: e.target.value })
-            }
-          />
-
+        <form onSubmit={handleCreateFaculty} className="space-y-3">
           <select
-            className="border p-2 w-full mb-2"
+            className="border p-2 w-full"
             value={facultyForm.departmentId}
             onChange={(e) =>
               setFacultyForm({
@@ -218,7 +227,7 @@ const Users = () => {
           </select>
 
           <input
-            className="border p-2 w-full mb-3"
+            className="border p-2 w-full"
             placeholder="Designation (optional)"
             value={facultyForm.designation}
             onChange={(e) =>
@@ -229,12 +238,11 @@ const Users = () => {
             }
           />
 
-          <button className="bg-green-600 text-white px-4 py-2 rounded">
-            Create Faculty
+          <button className="bg-emerald-600 text-white px-4 py-2 rounded">
+            Create Faculty Profile
           </button>
         </form>
       </div>
-
     </div>
   );
 };

@@ -16,7 +16,7 @@ const AdminLayout = () => {
       <Link to="/admin/enrollments">Enroll Students</Link>
       <Link to="/admin/gpa">Compute GPA</Link>
       <Link to="/admin/approvals">Approvals</Link>
-
+      <Link to="/admin/users">Users</Link>
       </nav>
 
 

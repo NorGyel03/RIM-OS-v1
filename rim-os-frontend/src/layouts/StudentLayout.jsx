@@ -29,6 +29,12 @@ const StudentLayout = () => {
           >
             Transcript
           </Link>
+          <Link
+            to="/student/attendance"
+            className="block px-3 py-2 rounded hover:bg-slate-700"
+          >
+            Attendance
+          </Link>
         </nav>
       </aside>
 

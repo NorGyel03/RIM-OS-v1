@@ -110,3 +110,103 @@ export const enrollStudent = async (studentId, courseId) => {
   );
   return rows[0];
 };
+
+
+
+/* =========================
+   USERS WITHOUT PROFILE
+========================= */
+export const getUnassignedUsers = async () => {
+  const result = await pool.query(`
+    SELECT id, username
+    FROM users
+    WHERE id NOT IN (SELECT user_id FROM students)
+      AND id NOT IN (SELECT user_id FROM faculty)
+  `);
+
+  return result.rows;
+};
+
+/* =========================
+   CREATE STUDENT PROFILE
+========================= */
+export const createStudentProfile = async ({
+  userId,
+  programId,
+  enrollmentNo,
+  admissionYear,
+}) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // 1️⃣ Insert student profile
+    await client.query(
+      `
+      INSERT INTO students (user_id, program_id, enrollment_no, admission_year)
+      VALUES ($1, $2, $3, $4)
+      `,
+      [userId, programId, enrollmentNo, admissionYear]
+    );
+
+    // 2️⃣ Update user role + activate (ENUM SAFE)
+    await client.query(
+      `
+      UPDATE users
+      SET role = $2::user_role,
+          is_active = true
+      WHERE id = $1
+      `,
+      [userId, "student"]
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err; // VERY IMPORTANT
+  } finally {
+    client.release();
+  }
+};
+
+/* =========================
+   CREATE FACULTY PROFILE
+========================= */
+export const createFacultyProfile = async ({
+  userId,
+  departmentId,
+  designation,
+}) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    await client.query(
+      `
+      INSERT INTO faculty (user_id, department_id, designation)
+      VALUES ($1, $2, $3)
+      `,
+      [userId, departmentId, designation || null]
+    );
+
+    await client.query(
+      `
+      UPDATE users
+      SET role = $2::user_role,
+          is_active = true
+      WHERE id = $1
+      `,
+      [userId, "faculty"]
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+

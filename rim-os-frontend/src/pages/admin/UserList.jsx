@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
-import UserList from "../pages/admin/UserList";
 
 const UserList = () => {
   const [students, setStudents] = useState([]);
@@ -12,24 +11,27 @@ const UserList = () => {
   }, []);
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Users</h2>
+    <div className="space-y-10">
+
+      <h2 className="text-2xl font-semibold">User Profiles</h2>
 
       {/* STUDENTS */}
       <div>
-        <h3 className="font-semibold mb-2">Students</h3>
+        <h3 className="font-medium mb-2">Students</h3>
         <table className="w-full border">
-          <thead className="bg-slate-700 text-white">
+          <thead className="bg-slate-100">
             <tr>
-              <th className="border p-2">Username</th>
-              <th className="border p-2">Program</th>
+              <th className="border p-2 text-left">Username</th>
+              <th className="border p-2 text-left">Program</th>
+              <th className="border p-2 text-left">Enrollment No</th>
             </tr>
           </thead>
           <tbody>
             {students.map(s => (
               <tr key={s.id}>
                 <td className="border p-2">{s.username}</td>
-                <td className="border p-2">{s.program}</td>
+                <td className="border p-2">{s.program_name}</td>
+                <td className="border p-2">{s.enrollment_no}</td>
               </tr>
             ))}
           </tbody>
@@ -38,26 +40,27 @@ const UserList = () => {
 
       {/* FACULTY */}
       <div>
-        <h3 className="font-semibold mb-2">Faculty</h3>
+        <h3 className="font-medium mb-2">Faculty</h3>
         <table className="w-full border">
-          <thead className="bg-slate-700 text-white">
+          <thead className="bg-slate-100">
             <tr>
-              <th className="border p-2">Username</th>
-              <th className="border p-2">Department</th>
-              <th className="border p-2">Designation</th>
+              <th className="border p-2 text-left">Username</th>
+              <th className="border p-2 text-left">Department</th>
+              <th className="border p-2 text-left">Designation</th>
             </tr>
           </thead>
           <tbody>
             {faculty.map(f => (
               <tr key={f.id}>
                 <td className="border p-2">{f.username}</td>
-                <td className="border p-2">{f.department}</td>
+                <td className="border p-2">{f.department_name}</td>
                 <td className="border p-2">{f.designation}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
     </div>
   );
 };

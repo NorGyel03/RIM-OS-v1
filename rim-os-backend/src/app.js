@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
+/* ROUTE IMPORTS */
 import authRoutes from "./modules/auth/auth.routes.js";
 import programRoutes from "./modules/programs/programs.routes.js";
 import courseRoutes from "./modules/courses/courses.routes.js";
@@ -16,42 +17,47 @@ import adminRoutes from "./modules/admin/admin.routes.js";
 import departmentRoutes from "./modules/departments/departments.routes.js";
 import facultyCourseRoutes from "./modules/facultyCourses/facultyCourses.routes.js";
 
-
-
-
-
-
 dotenv.config();
 
 const app = express();
 
-/* 🔴 THIS MUST BE BEFORE ROUTES */
+/* =========================
+   GLOBAL MIDDLEWARE
+========================= */
 app.use(cors());
 app.use(express.json());
 
-/* ROUTES */
+/* =========================
+   ROUTES
+========================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/programs", programRoutes);
 app.use("/api/courses", courseRoutes);
+
+/* 🔑 STUDENT ROUTES (includes GET /students/attendance) */
 app.use("/api/students", studentRoutes);
+
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/marks", marksRoutes);
 app.use("/api/gpa", gpaRoutes);
 app.use("/api/transcripts", transcriptRoutes);
+
+/* 🔑 ADMIN ROUTES */
 app.use("/api/admin", adminRoutes);
+
 app.use("/api/departments", departmentRoutes);
 app.use("/api/faculty-courses", facultyCourseRoutes);
 
-
-
+/* =========================
+   TEST ROUTE (OPTIONAL)
+========================= */
 app.post("/__test", (req, res) => {
   res.json({
     headers: req.headers,
-    body: req.body
+    body: req.body,
   });
 });
-
 
 export default app;

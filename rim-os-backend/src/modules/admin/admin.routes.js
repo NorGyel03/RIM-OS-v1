@@ -15,9 +15,11 @@ import {
   getAllUsers,
   listPendingUsers,
   approveUser,
-  deleteUser
+  deleteUser,
+
 } from "./admin.controller.js";
 
+import * as adminController from "./admin.controller.js";
 
 /* Middleware */
 import { authenticateUser } from "../../middlewares/auth.middleware.js";
@@ -73,7 +75,25 @@ router.get("/departments", getDepartments);
 router.get("/users", getAllUsers);
 router.get("/pending-users", listPendingUsers);
 router.post("/approve-user/:userId", approveUser);
-router.delete("/reject-user/:userId",authenticateUser,authorizeRole("admin"),deleteUser
+router.delete("/reject-user/:userId",authenticateUser,authorizeRole("admin"),deleteUser);
+
+/* =========================
+   CREATE STUDENT FACULTY PROFILE
+========================= */
+router.post("/create-student-profile", adminController.createStudentProfile);
+router.post("/create-faculty-profile", adminController.createFacultyProfile);
+router.get("/users", adminController.getUnassignedUsers);
+
+console.log("🔥 ADMIN ROUTES LOADED");
+
+router.post(
+  "/create-student-profile",
+  (req, res, next) => {
+    console.log("🔥 ADMIN CREATE STUDENT ROUTE HIT");
+    next();
+  },
+  adminController.createStudentProfile
 );
+
 
 export default router;

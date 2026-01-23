@@ -100,7 +100,7 @@ const AdminDashboard = () => {
 /* ---------------- COMPONENTS ---------------- */
 
 const StatTile = ({ title, value }) => (
-  <div className="bg-white border border-slate-200 rounded-xl p-6">
+  <div className="bg-gray-400 border border-slate-200 rounded-xl p-6">
     <p className="text-sm text-slate-500">{title}</p>
     <p className="text-4xl font-semibold text-slate-900 mt-2">
       {value}
