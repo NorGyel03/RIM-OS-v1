@@ -4,6 +4,7 @@ import api from "../../api/axios";
 const Approvals = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionId, setActionId] = useState(null);
 
   const loadPending = async () => {
     try {
@@ -22,11 +23,13 @@ const Approvals = () => {
 
   const approve = async (id) => {
     try {
+      setActionId(id);
       await api.post(`/admin/approve-user/${id}`);
       setUsers((prev) => prev.filter((u) => u.id !== id));
-    } catch (err) {
-      console.error("Approval failed", err);
+    } catch {
       alert("Approval failed");
+    } finally {
+      setActionId(null);
     }
   };
 
@@ -34,55 +37,88 @@ const Approvals = () => {
     if (!confirm("Reject and delete this user?")) return;
 
     try {
+      setActionId(id);
       await api.delete(`/admin/reject-user/${id}`);
       setUsers((prev) => prev.filter((u) => u.id !== id));
-    } catch (err) {
-      console.error("Rejection failed", err);
+    } catch {
       alert("Failed to reject user");
+    } finally {
+      setActionId(null);
     }
   };
 
-  if (loading) return <p>Loading approvals...</p>;
-
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Pending User Approvals</h2>
+    <div className="max-w-6xl mx-auto space-y-10">
 
-      {users.length === 0 && <p>No pending users</p>}
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-semibold text-white">
+          User Approvals
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Review and manage pending user access requests
+        </p>
+      </div>
 
-      <table className="border w-full">
-        <thead>
-          <tr>
-            <th className="border p-2">Username</th>
-            <th className="border p-2">Role</th>
-            <th className="border p-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td className="border p-2">{u.username}</td>
-              <td className="border p-2">{u.role}</td>
-              <td className="border p-2">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => approve(u.id)}
-                    className="bg-green-600 text-white px-3 py-1 rounded"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => reject(u.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* LOADING */}
+      {loading && (
+        <div className="text-sm text-slate-500">
+          Loading pending approvals…
+        </div>
+      )}
+
+      {/* EMPTY STATE */}
+      {!loading && users.length === 0 && (
+        <div className="bg-white border border-slate-200 rounded-lg p-6 text-sm text-slate-600">
+          No pending user approvals.
+        </div>
+      )}
+
+      {/* TABLE */}
+      {!loading && users.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600">
+              <tr>
+                <th className="px-6 py-3 text-left">Username</th>
+                <th className="px-6 py-3 text-left">Role</th>
+                <th className="px-6 py-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {users.map((u) => (
+                <tr key={u.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-3 text-slate-900">
+                    {u.username}
+                  </td>
+                  <td className="px-6 py-3 text-slate-600">
+                    {u.role}
+                  </td>
+                  <td className="px-6 py-3 text-right">
+                    <div className="inline-flex gap-2">
+                      <button
+                        onClick={() => approve(u.id)}
+                        disabled={actionId === u.id}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-md px-4 py-1.5 text-sm font-medium disabled:opacity-60"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => reject(u.id)}
+                        disabled={actionId === u.id}
+                        className="bg-rose-600 hover:bg-rose-700 text-white rounded-md px-4 py-1.5 text-sm font-medium disabled:opacity-60"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
     </div>
   );
 };

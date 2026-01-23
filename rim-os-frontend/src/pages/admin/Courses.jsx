@@ -3,7 +3,7 @@ import api from "../../api/axios";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
-  const [programs, setPrograms] = useState([]); // ✅ NEW
+  const [programs, setPrograms] = useState([]);
   const [form, setForm] = useState({
     programId: "",
     code: "",
@@ -25,7 +25,7 @@ const Courses = () => {
 
   useEffect(() => {
     loadCourses();
-    loadPrograms(); // ✅ NEW
+    loadPrograms();
   }, []);
 
   const handleChange = (e) => {
@@ -63,9 +63,7 @@ const Courses = () => {
       });
 
       await loadCourses();
-      alert("Course created");
     } catch (err) {
-      console.error(err);
       alert("Failed to create course");
     } finally {
       setLoading(false);
@@ -73,94 +71,127 @@ const Courses = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Courses</h2>
+    <div className="max-w-7xl mx-auto space-y-10">
 
-      {/* Create Course */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-black p-4 rounded shadow mb-6"
-      >
-        <h3 className="font-semibold mb-3">Create Course</h3>
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-semibold text-white">
+          Courses
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Manage program courses
+        </p>
+      </div>
 
-        {/* ✅ PROGRAM DROPDOWN */}
-        <select
-          name="programId"
-          value={form.programId}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
+      {/* ADD COURSE */}
+      <div className="bg-white border border-slate-200 rounded-lg p-6">
+        <h2 className="text-lg font-medium text-slate-900 mb-4">
+          Add Course
+        </h2>
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-6 gap-4"
         >
-          <option value="">Select Program</option>
-          {programs.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+          <select
+            name="programId"
+            value={form.programId}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">Program</option>
+            {programs.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
 
-        <input
-          name="code"
-          placeholder="Course Code"
-          value={form.code}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-        />
+          <input
+            name="code"
+            placeholder="Course Code"
+            value={form.code}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+          />
 
-        <input
-          name="title"
-          placeholder="Course Title"
-          value={form.title}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-        />
+          <input
+            name="title"
+            placeholder="Course Title"
+            value={form.title}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 col-span-2"
+          />
 
-        <input
-          name="credit"
-          type="number"
-          placeholder="Credit"
-          value={form.credit}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-        />
+          <input
+            name="credit"
+            type="number"
+            min="1"
+            placeholder="Credit"
+            value={form.credit}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+          />
 
-        <input
-          name="semester"
-          type="number"
-          placeholder="Semester"
-          value={form.semester}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3"
-        />
+          <input
+            name="semester"
+            type="number"
+            min="1"
+            placeholder="Semester"
+            value={form.semester}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+          />
 
-        <button
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {loading ? "Creating..." : "Create Course"}
-        </button>
-      </form>
+          <button
+            disabled={loading}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-4 py-2 text-sm font-medium disabled:opacity-60 md:col-span-6"
+          >
+            {loading ? "Adding..." : "Add Course"}
+          </button>
+        </form>
+      </div>
 
-      {/* Courses List */}
-      <table className="w-full border border-gray-300">
-        <thead className="bg-slate-700 text-white">
-          <tr>
-            <th className="border border-gray-300 p-2 text-left">Code</th>
-            <th className="border border-gray-300 p-2 text-left">Title</th>
-            <th className="border border-gray-300 p-2 text-left">Credit</th>
-            <th className="border border-gray-300 p-2 text-left">Semester</th>
-          </tr>
-        </thead>
-        <tbody>
-          {courses.map((c) => (
-            <tr key={c.id} className="hover:bg-gray-50">
-              <td className="border p-2">{c.code}</td>
-              <td className="border p-2">{c.title}</td>
-              <td className="border p-2">{c.credit}</td>
-              <td className="border p-2">{c.semester}</td>
+      {/* COURSE LIST */}
+      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200">
+          <h2 className="text-lg font-medium text-slate-900">
+            Existing Courses
+          </h2>
+        </div>
+
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50 text-slate-600">
+            <tr>
+              <th className="px-6 py-3 text-left">Code</th>
+              <th className="px-6 py-3 text-left">Title</th>
+              <th className="px-6 py-3 text-left">Credit</th>
+              <th className="px-6 py-3 text-left">Semester</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y">
+            {courses.length === 0 && (
+              <tr>
+                <td
+                  colSpan="4"
+                  className="px-6 py-4 text-slate-500"
+                >
+                  No courses created yet.
+                </td>
+              </tr>
+            )}
+
+            {courses.map((c) => (
+              <tr key={c.id} className="hover:bg-slate-50">
+                <td className="px-6 py-3 text-slate-900">{c.code}</td>
+                <td className="px-6 py-3 text-slate-700">{c.title}</td>
+                <td className="px-6 py-3 text-slate-700">{c.credit}</td>
+                <td className="px-6 py-3 text-slate-700">{c.semester}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

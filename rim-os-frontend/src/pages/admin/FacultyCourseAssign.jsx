@@ -6,6 +6,7 @@ const FacultyCourseAssign = () => {
   const [courses, setCourses] = useState([]);
   const [facultyId, setFacultyId] = useState("");
   const [courseId, setCourseId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     api.get("/admin/faculty").then(res => setFaculty(res.data));
@@ -18,53 +19,100 @@ const FacultyCourseAssign = () => {
       return;
     }
 
-    await api.post("/faculty-courses/assign", {
-      facultyId,
-      courseId,
-    });
+    try {
+      setLoading(true);
+      await api.post("/faculty-courses/assign", {
+        facultyId,
+        courseId,
+      });
 
-    alert("Faculty assigned");
+      setFacultyId("");
+      setCourseId("");
+      alert("Faculty assigned successfully");
+    } catch (err) {
+      alert("Failed to assign faculty");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">
-        Assign Faculty to Course
-      </h2>
+    <div className="max-w-4xl mx-auto space-y-10">
 
-      <select
-        className="border p-2 mb-3 w-full"
-        value={facultyId}
-        onChange={(e) => setFacultyId(e.target.value)}
-      >
-        <option value="">Select Faculty</option>
-        {faculty.map(f => (
-          <option key={f.id} value={f.id}>
-            {f.username} {f.designation ? `(${f.designation})` : ""}
-          </option>
-        ))}
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-semibold text-white">
+          Assign Faculty
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Assign faculty members to courses
+        </p>
+      </div>
 
-      </select>
+      {/* ASSIGN CARD */}
+      <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-6">
 
-      <select
-        className="border p-2 mb-3 w-full"
-        value={courseId}
-        onChange={(e) => setCourseId(e.target.value)}
-      >
-        <option value="">Select Course</option>
-        {courses.map(c => (
-          <option key={c.id} value={c.id}>
-            {c.code} — {c.title}
-          </option>
-        ))}
-      </select>
+        <div>
+          <h2 className="text-lg font-medium text-slate-900">
+            Faculty–Course Assignment
+          </h2>
+        </div>
 
-      <button
-        onClick={assign}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Assign
-      </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* FACULTY */}
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              Faculty
+            </label>
+            <select
+              value={facultyId}
+              onChange={(e) => setFacultyId(e.target.value)}
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Select faculty</option>
+              {faculty.map(f => (
+                <option key={f.id} value={f.id}>
+                  {f.username}
+                  {f.designation ? ` (${f.designation})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* COURSE */}
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              Course
+            </label>
+            <select
+              value={courseId}
+              onChange={(e) => setCourseId(e.target.value)}
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Select course</option>
+              {courses.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.code} — {c.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+        </div>
+
+        {/* ACTION */}
+        <div className="pt-2">
+          <button
+            onClick={assign}
+            disabled={loading}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-6 py-2 text-sm font-medium disabled:opacity-60"
+          >
+            {loading ? "Assigning..." : "Assign Faculty"}
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };

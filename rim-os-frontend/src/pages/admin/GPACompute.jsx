@@ -11,15 +11,12 @@ const GPACompute = () => {
   const [academicYear, setAcademicYear] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Load courses (reuse an admin-safe endpoint you already have,
-  // or temporarily reuse faculty course list if admin endpoint isn’t ready)
   useEffect(() => {
-    api.get("/faculty/courses") // TEMP SAFE REUSE
+    api.get("/faculty/courses")
       .then(res => setCourses(res.data))
       .catch(console.error);
   }, []);
 
-  // Load students for selected course
   useEffect(() => {
     if (!courseId) {
       setStudents([]);
@@ -27,7 +24,7 @@ const GPACompute = () => {
       return;
     }
 
-    api.get(`/faculty/courses/${courseId}/students`) // TEMP SAFE REUSE
+    api.get(`/faculty/courses/${courseId}/students`)
       .then(res => setStudents(res.data))
       .catch(console.error);
   }, [courseId]);
@@ -42,7 +39,6 @@ const GPACompute = () => {
 
     try {
       setLoading(true);
-
       await api.post("/gpa/compute", {
         studentId,
         courseId,
@@ -51,8 +47,10 @@ const GPACompute = () => {
       });
 
       alert("GPA computed successfully");
+      setStudentId("");
+      setSemester("");
+      setAcademicYear("");
     } catch (err) {
-      console.error(err);
       alert("Failed to compute GPA");
     } finally {
       setLoading(false);
@@ -60,61 +58,108 @@ const GPACompute = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">Compute GPA</h2>
+    <div className="max-w-4xl mx-auto space-y-10">
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <select
-          className="border p-2 w-full"
-          value={courseId}
-          onChange={(e) => setCourseId(e.target.value)}
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-semibold text-white">
+          Compute GPA
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Final GPA computation for enrolled students
+        </p>
+      </div>
+
+      {/* FORM CARD */}
+      <div className="bg-white border border-slate-200 rounded-lg p-6">
+        <h2 className="text-lg font-medium text-slate-900 mb-4">
+          GPA Parameters
+        </h2>
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <option value="">Select Course</option>
-          {courses.map(c => (
-            <option key={c.id} value={c.id}>
-              {c.code} — {c.title}
-            </option>
-          ))}
-        </select>
+          {/* COURSE */}
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              Course
+            </label>
+            <select
+              value={courseId}
+              onChange={(e) => setCourseId(e.target.value)}
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Select course</option>
+              {courses.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.code} — {c.title}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <select
-          className="border p-2 w-full"
-          value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
-          disabled={!courseId}
-        >
-          <option value="">Select Student</option>
-          {students.map(s => (
-            <option key={s.student_id} value={s.student_id}>
-              {s.username}
-            </option>
-          ))}
-        </select>
+          {/* STUDENT */}
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              Student
+            </label>
+            <select
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              disabled={!courseId}
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-100"
+            >
+              <option value="">Select student</option>
+              {students.map(s => (
+                <option key={s.student_id} value={s.student_id}>
+                  {s.username}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <input
-          type="number"
-          placeholder="Semester"
-          className="border p-2 w-full"
-          value={semester}
-          onChange={(e) => setSemester(e.target.value)}
-        />
+          {/* SEMESTER */}
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              Semester
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={semester}
+              onChange={(e) => setSemester(e.target.value)}
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. 3"
+            />
+          </div>
 
-        <input
-          type="text"
-          placeholder="Academic Year (e.g. 2025-2026)"
-          className="border p-2 w-full"
-          value={academicYear}
-          onChange={(e) => setAcademicYear(e.target.value)}
-        />
+          {/* ACADEMIC YEAR */}
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              Academic Year
+            </label>
+            <input
+              type="text"
+              value={academicYear}
+              onChange={(e) => setAcademicYear(e.target.value)}
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. 2025–2026"
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {loading ? "Computing..." : "Compute GPA"}
-        </button>
-      </form>
+          {/* ACTION */}
+          <div className="md:col-span-2 pt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-6 py-2 text-sm font-medium disabled:opacity-60"
+            >
+              {loading ? "Computing..." : "Compute GPA"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
