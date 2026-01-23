@@ -84,14 +84,11 @@ router.post("/create-student-profile", adminController.createStudentProfile);
 router.post("/create-faculty-profile", adminController.createFacultyProfile);
 router.get("/users", adminController.getUnassignedUsers);
 
-console.log("🔥 ADMIN ROUTES LOADED");
+router.get("/user-status", adminController.getUserStatuses);
+
 
 router.post(
   "/create-student-profile",
-  (req, res, next) => {
-    console.log("🔥 ADMIN CREATE STUDENT ROUTE HIT");
-    next();
-  },
   adminController.createStudentProfile
 );
 

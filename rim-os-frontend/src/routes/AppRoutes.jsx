@@ -29,6 +29,7 @@ import Departments from "../pages/admin/Departments";
 import FacultyCourseAssign from "../pages/admin/FacultyCourseAssign";
 import Approvals from "../pages/admin/Approvals";
 import PendingUsers from "../pages/admin/PendingUsers";
+import UserList from "../pages/admin/UserList";
 
 const AppRoutes = () => {
   return (
@@ -66,9 +67,11 @@ const AppRoutes = () => {
           <Route path="courses" element={<Courses />} />
           <Route path="users" element={<Users />} />
           <Route path="departments" element={<Departments />} />
-          <Route path="faculty-course-assign" element={<FacultyCourseAssign />} />
+          <Route path="faculty-assign" element={<FacultyCourseAssign />} />
           <Route path="approvals" element={<Approvals />} />
           <Route path="pending-users" element={<PendingUsers />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="user-database" element={<UserList />} />
         </Route>
       </Route>
 

@@ -3,7 +3,6 @@ import { createProgram as createProgramService } from "./admin.service.js";
 
 
 /* ---------- PROGRAMS ---------- */
-console.log("🔥 admin.controller.js LOADED");
 
 
 export const createProgram = async (req, res) => {
@@ -359,4 +358,15 @@ export const createFacultyProfile = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Failed to create faculty profile" });
   }
+};
+
+
+export const getStudents = async (req, res) => {
+  const students = await adminService.getAdminStudents();
+  res.json(students);
+};
+
+export const getUserStatuses = async (req, res) => {
+  const users = await adminService.getUserProfileStatus();
+  res.json(users);
 };

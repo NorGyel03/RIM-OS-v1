@@ -210,3 +210,58 @@ export const createFacultyProfile = async ({
   }
 };
 
+export const getAdminStudents = async () => {
+  const res = await pool.query(`
+    SELECT
+      s.id,
+      u.id AS user_id,
+      u.username,
+      s.enrollment_no,
+      p.name AS program_name
+    FROM students s
+    JOIN users u ON u.id = s.user_id
+    JOIN programs p ON p.id = s.program_id
+    ORDER BY u.username
+  `);
+
+  return res.rows;
+};
+
+export const getAdminFaculty = async () => {
+  const res = await pool.query(`
+    SELECT
+      f.id,
+      u.id AS user_id,
+      u.username,
+      d.name AS department_name,
+      f.designation
+    FROM faculty f
+    JOIN users u ON u.id = f.user_id
+    JOIN departments d ON d.id = f.department_id
+    ORDER BY u.username
+  `);
+
+  return res.rows;
+};
+
+export const getUserProfileStatus = async () => {
+  const res = await pool.query(`
+    SELECT
+      u.id,
+      u.username,
+      u.role,
+
+      CASE WHEN up.id IS NOT NULL THEN true ELSE false END AS has_profile,
+      CASE WHEN s.id IS NOT NULL THEN true ELSE false END AS is_student,
+      CASE WHEN f.id IS NOT NULL THEN true ELSE false END AS is_faculty
+
+    FROM users u
+    LEFT JOIN user_profiles up ON up.user_id = u.id
+    LEFT JOIN students s ON s.user_id = u.id
+    LEFT JOIN faculty f ON f.user_id = u.id
+
+    ORDER BY u.username
+  `);
+
+  return res.rows;
+};

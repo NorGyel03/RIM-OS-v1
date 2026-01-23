@@ -16,6 +16,7 @@ import transcriptRoutes from "./modules/transcripts/transcripts.routes.js";
 import adminRoutes from "./modules/admin/admin.routes.js";
 import departmentRoutes from "./modules/departments/departments.routes.js";
 import facultyCourseRoutes from "./modules/facultyCourses/facultyCourses.routes.js";
+import userProfileRoutes from "./modules/userProfiles/userProfiles.routes.js";
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/programs", programRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/user-profiles", userProfileRoutes);
 
 /* 🔑 STUDENT ROUTES (includes GET /students/attendance) */
 app.use("/api/students", studentRoutes);

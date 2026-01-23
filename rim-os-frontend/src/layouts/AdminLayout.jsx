@@ -1,26 +1,38 @@
 import { Outlet, Link } from "react-router-dom";
+import LogoutButton from "../components/LogoutButton";
 
 const AdminLayout = () => {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">
-        Admin Dashboard
-      </h1>
+    <div className="min-h-screen bg-slate-100">
+      {/* HEADER */}
+      <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
+        <h1 className="text-lg font-semibold text-slate-800">
+          Admin Portal
+        </h1>
+        <LogoutButton />
+      </header>
 
-      <nav className="mb-4 space-x-4">
-      <Link to="/admin">Home</Link>
-      <Link to="/admin/departments">Departments</Link>
-      <Link to="/admin/programs">Programs</Link>
-      <Link to="/admin/courses">Courses</Link>
-      <Link to="/admin/faculty-assign">Assign Faculty</Link>
-      <Link to="/admin/enrollments">Enroll Students</Link>
-      <Link to="/admin/gpa">Compute GPA</Link>
-      <Link to="/admin/approvals">Approvals</Link>
-      <Link to="/admin/users">Users</Link>
+      {/* NAV */}
+      <nav className="bg-white border-b px-6 py-3 flex flex-wrap gap-4 text-sm text-slate-600">
+        <Link className="hover:text-slate-900" to="/admin">Home</Link>
+        <Link className="hover:text-slate-900" to="/admin/departments">Departments</Link>
+        <Link className="hover:text-slate-900" to="/admin/programs">Programs</Link>
+        <Link className="hover:text-slate-900" to="/admin/courses">Courses</Link>
+        <Link className="hover:text-slate-900" to="/admin/faculty-assign">Assign Faculty</Link>
+        <Link className="hover:text-slate-900" to="/admin/enrollments">Enrollments</Link>
+        <Link className="hover:text-slate-900" to="/admin/gpa">Compute GPA</Link>
+        <Link className="hover:text-slate-900" to="/admin/approvals">Approvals</Link>
+        <Link className="hover:text-slate-900" to="/admin/users">Users</Link>
+        <Link className="hover:text-slate-900" to="/admin/user-database">User Database</Link>
+
       </nav>
 
-
-      <Outlet />
+      {/* CONTENT */}
+      <main className="p-6">
+        <div className="max-w-7xl mx-auto">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 };

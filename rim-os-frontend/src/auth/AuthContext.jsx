@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // 🔐 LOGIN (THIS WAS BROKEN BEFORE)
+  // 🔐 LOGIN
   const login = (token, role) => {
     localStorage.setItem("token", token);
     localStorage.setItem("role", role);
@@ -29,15 +29,12 @@ export const AuthProvider = ({ children }) => {
     setUserRole(role);
   };
 
-  // 🚪 LOGOUT
+  // 🚪 LOGOUT (FINAL)
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-
+    localStorage.clear();       // ✅ clears token + role safely
     setToken(null);
     setUserRole(null);
   };
-  console.log("AuthProvider render:", { token, userRole, loading });
 
   return (
     <AuthContext.Provider
@@ -47,6 +44,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         loading,
+        isAuthenticated: !!token, // ✅ useful everywhere
       }}
     >
       {children}

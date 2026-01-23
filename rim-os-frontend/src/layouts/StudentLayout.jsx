@@ -1,4 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
+import LogoutButton from "../components/LogoutButton";
 
 const StudentLayout = () => {
   return (
@@ -36,6 +37,12 @@ const StudentLayout = () => {
             Attendance
           </Link>
         </nav>
+
+         {/* Logout */}
+        <div className="p-4 border-t border-slate-700">
+          <LogoutButton />
+        </div>
+
       </aside>
 
       {/* Main Content */}
