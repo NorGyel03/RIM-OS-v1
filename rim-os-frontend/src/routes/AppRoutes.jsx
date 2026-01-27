@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import ProtectedRoute from "../auth/ProtectedRoute";
+import StudentProfile from "../pages/student/StudentProfile";
+import FacultyProfile from "../pages/faculty/FacultyProfile";
+
 
 import StudentLayout from "../layouts/StudentLayout";
 import FacultyLayout from "../layouts/FacultyLayout";
@@ -45,6 +48,7 @@ const AppRoutes = () => {
           <Route path="attendance" element={<StudentAttendanceView />} />
           <Route path="gpa" element={<GPA />} />
           <Route path="transcript" element={<Transcript />} />
+          <Route path="profile" element={<StudentProfile />} />
         </Route>
       </Route>
 
@@ -54,6 +58,7 @@ const AppRoutes = () => {
           <Route index element={<FacultyDashboard />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="marks" element={<Marks />} />
+          <Route path="profile" element={<FacultyProfile />} />
         </Route>
       </Route>
 

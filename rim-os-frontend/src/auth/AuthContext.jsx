@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔁 Restore auth on refresh
+  /* 🔁 Restore auth on refresh */
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedRole = localStorage.getItem("role");
@@ -20,18 +20,15 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // 🔐 LOGIN
   const login = (token, role) => {
     localStorage.setItem("token", token);
     localStorage.setItem("role", role);
-
     setToken(token);
     setUserRole(role);
   };
 
-  // 🚪 LOGOUT (FINAL)
   const logout = () => {
-    localStorage.clear();       // ✅ clears token + role safely
+    localStorage.clear();
     setToken(null);
     setUserRole(null);
   };
@@ -44,7 +41,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         loading,
-        isAuthenticated: !!token, // ✅ useful everywhere
+        isAuthenticated: !!token,
       }}
     >
       {children}

@@ -87,7 +87,7 @@ const AttendanceForm = () => {
     <div className="max-w-xl">
       {/* HEADER */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-white">
+        <h2 className="text-xl font-semibold text-black">
           Mark Attendance
         </h2>
         <p className="text-sm text-slate-500 mt-1">

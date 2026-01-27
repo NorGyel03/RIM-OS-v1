@@ -126,7 +126,7 @@ const Users = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-10">
-      <h2 className="text-2xl font-semibold text-white">
+      <h2 className="text-2xl font-semibold text-black">
         Assign Student / Faculty Profiles
       </h2>
 

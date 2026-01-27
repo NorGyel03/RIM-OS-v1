@@ -1,10 +1,26 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, Navigate } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton";
+import { useAuth } from "../auth/AuthContext";
 
 const FacultyLayout = () => {
+  const { isAuthenticated, userRole, loading } = useAuth();
+
+  /* ⏳ WAIT FOR AUTH */
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  /* 🔐 GUARD */
+  if (!isAuthenticated || userRole !== "faculty") {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-100">
-
       {/* Top Bar */}
       <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
         <h1 className="text-lg font-semibold text-slate-800">
@@ -15,20 +31,21 @@ const FacultyLayout = () => {
 
       {/* Navigation */}
       <nav className="bg-white border-b px-6 py-3 flex gap-6 text-sm">
-        <NavLink to="/faculty">Dashboard</NavLink>
-        <NavLink to="/faculty/attendance">Attendance</NavLink>
-        <NavLink to="/faculty/marks">Marks</NavLink>
+        <NavItem to="/faculty">Dashboard</NavItem>
+        <NavItem to="/faculty/attendance">Attendance</NavItem>
+        <NavItem to="/faculty/marks">Marks</NavItem>
+        <NavItem to="/faculty/profile">My Profile</NavItem>
       </nav>
 
       {/* Content */}
-      <main className="p-6">
+      <main className="text-gray-500">
         <Outlet />
       </main>
     </div>
   );
 };
 
-const NavLink = ({ to, children }) => (
+const NavItem = ({ to, children }) => (
   <Link
     to={to}
     className="text-slate-600 hover:text-slate-900 font-medium transition"

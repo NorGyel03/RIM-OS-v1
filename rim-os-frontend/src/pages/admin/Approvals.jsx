@@ -52,7 +52,7 @@ const Approvals = () => {
 
       {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-black">
           User Approvals
         </h1>
         <p className="text-sm text-slate-500 mt-1">

@@ -36,7 +36,7 @@ app.use("/api/programs", programRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/user-profiles", userProfileRoutes);
 
-/* 🔑 STUDENT ROUTES (includes GET /students/attendance) */
+/*  STUDENT ROUTES (includes GET /students/attendance) */
 app.use("/api/students", studentRoutes);
 
 app.use("/api/faculty", facultyRoutes);
@@ -46,7 +46,7 @@ app.use("/api/marks", marksRoutes);
 app.use("/api/gpa", gpaRoutes);
 app.use("/api/transcripts", transcriptRoutes);
 
-/* 🔑 ADMIN ROUTES */
+/*  ADMIN ROUTES */
 app.use("/api/admin", adminRoutes);
 
 app.use("/api/departments", departmentRoutes);

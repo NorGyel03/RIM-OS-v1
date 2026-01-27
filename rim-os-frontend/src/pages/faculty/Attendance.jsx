@@ -5,7 +5,7 @@ const Attendance = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">
+      <h2 className="text-xl font-bold mb-4 text-black">
         Attendance Page Loaded
       </h2>
 

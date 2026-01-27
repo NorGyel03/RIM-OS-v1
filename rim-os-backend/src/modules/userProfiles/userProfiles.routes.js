@@ -1,15 +1,21 @@
 import express from "express";
 import {
-  createProfile,
-  getProfile,
-  updateProfile,
+  getUserProfile,
+  getMyProfile,
+  createUserProfile,
+  updateUserProfile,
 } from "./userProfiles.controller.js";
+
+import { authenticateUser } from "../../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-/* ADMIN-ONLY */
-router.post("/", createProfile);
-router.get("/:userId", getProfile);
-router.put("/:userId", updateProfile);
+/* 🔐 CURRENT USER */
+router.get("/me", authenticateUser, getMyProfile);
+router.post("/me", authenticateUser, createUserProfile);
+router.put("/me", authenticateUser, updateUserProfile);
+
+/* 👨‍💼 ADMIN / SHARED */
+router.get("/:userId", authenticateUser, getUserProfile);
 
 export default router;

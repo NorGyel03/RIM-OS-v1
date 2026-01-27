@@ -72,7 +72,7 @@ const MarksForm = () => {
     <div className="max-w-xl">
       {/* HEADER */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-white">
+        <h2 className="text-xl font-semibold text-black">
           Upload Marks
         </h2>
         <p className="text-sm text-slate-500 mt-1">

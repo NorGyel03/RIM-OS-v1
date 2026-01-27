@@ -1,41 +1,66 @@
-import * as service from "./userProfiles.service.js";
+import * as userProfileService from "./userProfiles.service.js";
 
 /* =========================
-   CREATE PROFILE (ADMIN)
+   ADMIN / SHARED VIEW
 ========================= */
-export const createProfile = async (req, res) => {
+export const getUserProfile = async (req, res) => {
   try {
-    await service.createUserProfile(req.body);
-    res.status(201).json({ message: "User profile created" });
-  } catch (err) {
-    console.error("❌ Create profile error:", err);
+    const { userId } = req.params;
 
-    if (err.code === "23505") {
-      return res.status(400).json({
-        message: "Profile already exists for this user",
-      });
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
     }
 
-    res.status(500).json({ message: err.message });
+    const profile =
+      await userProfileService.getUserProfileByUserId(userId);
+
+    res.json(profile || null);
+  } catch (err) {
+    console.error("❌ Get user profile error:", err);
+    res.status(500).json({ message: "Failed to fetch profile" });
+  }
+};
+
+
+/* =========================
+   CURRENT USER PROFILE
+========================= */
+export const getMyProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const profile =
+      await userProfileService.getUserProfileByUserId(userId);
+
+    res.json(profile || null);
+  } catch (err) {
+    console.error("❌ Get my profile error:", err);
+    res.status(500).json({ message: "Failed to fetch profile" });
   }
 };
 
 /* =========================
-   GET PROFILE
+   CREATE PROFILE
 ========================= */
-export const getProfile = async (req, res) => {
+export const createUserProfile = async (req, res) => {
   try {
-    const profile = await service.getUserProfileByUserId(
-      req.params.userId
-    );
+    const userId = req.user.id;
 
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found" });
+    await userProfileService.createUserProfile({
+      userId,
+      ...req.body,
+    });
+
+    res.status(201).json({ message: "Profile created" });
+  } catch (err) {
+    console.error("❌ Create profile error:", err);
+
+    if (err.code === "23505") {
+      return res
+        .status(400)
+        .json({ message: "Profile already exists" });
     }
 
-    res.json(profile);
-  } catch (err) {
-    console.error("❌ Get profile error:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -43,13 +68,18 @@ export const getProfile = async (req, res) => {
 /* =========================
    UPDATE PROFILE
 ========================= */
-export const updateProfile = async (req, res) => {
+export const updateUserProfile = async (req, res) => {
   try {
-    await service.updateUserProfile(req.params.userId, req.body);
+    const userId = req.user.id;
+
+    await userProfileService.updateUserProfile(
+      userId,
+      req.body
+    );
+
     res.json({ message: "Profile updated" });
   } catch (err) {
     console.error("❌ Update profile error:", err);
-      return res.json(null); 
-
+    res.status(500).json({ message: err.message });
   }
 };
