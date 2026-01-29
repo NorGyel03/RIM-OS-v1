@@ -5,6 +5,9 @@ import {
   markAttendance,
 } from "../../api/faculty.api";
 
+import api from "../../api/axios";
+
+
 const AttendanceForm = () => {
   const [courses, setCourses] = useState([]);
   const [students, setStudents] = useState([]);
@@ -32,24 +35,18 @@ const AttendanceForm = () => {
   /* =========================
      LOAD STUDENTS
   ========================= */
-  useEffect(() => {
-    if (!courseId) {
-      setStudents([]);
-      setStudentId("");
-      return;
-    }
-
-    const loadStudents = async () => {
-      try {
-        const data = await getStudentsByCourse(courseId);
-        setStudents(data);
-      } catch (err) {
-        console.error("Failed to load students", err);
+    useEffect(() => {
+      if (!courseId) {
+        setStudents([]);
+        setStudentId("");
+        return;
       }
-    };
 
-    loadStudents();
-  }, [courseId]);
+      api
+        .get(`/attendance/course/${courseId}/students`)
+        .then(res => setStudents(res.data))
+        .catch(err => console.error("Attendance load failed", err));
+    }, [courseId]);
 
   /* =========================
      SUBMIT
@@ -125,18 +122,24 @@ const AttendanceForm = () => {
             Student
           </label>
           <select
-            className="w-full rounded-lg border border-slate-300 p-2.5 disabled:bg-slate-100 disabled:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            value={studentId}
-            onChange={(e) => setStudentId(e.target.value)}
-            disabled={!courseId}
-          >
-            <option value="">Select Student</option>
-            {students.map((s) => (
-              <option key={s.student_id} value={s.student_id}>
-                {s.username}
-              </option>
-            ))}
-          </select>
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              disabled={!courseId}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Select Student</option>
+
+              {students.map((s) => (
+                <option
+                  key={s.student_id}
+                  value={s.student_id}
+                >
+                  {s.enrollment_no} — {s.username}
+                </option>
+              ))}
+            </select>
+
+
         </div>
 
         {/* STATUS */}

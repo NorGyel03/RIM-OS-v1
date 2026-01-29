@@ -42,3 +42,9 @@ export const approveUser = (userId) =>
 export const rejectUser = (userId) =>
   api.delete(`/admin/reject-user/${userId}`);
 
+export const getStudentsForGPA = async (courseId) => {
+  const res = await api.get(
+    `/gpa/course/${courseId}/students`
+  );
+  return res.data;
+};

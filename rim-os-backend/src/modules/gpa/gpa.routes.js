@@ -1,5 +1,5 @@
 import express from "express";
-import { computeFinal } from "./gpa.controller.js";
+import { computeFinal, getStudentsForGPA} from "./gpa.controller.js";
 import { authenticateUser } from "../../middlewares/auth.middleware.js";
 import { authorizeRole } from "../../middlewares/role.middleware.js";
 import { myGPA } from "./gpa.controller.js";
@@ -19,6 +19,12 @@ router.get(
   authenticateUser,
   authorizeRole("student"),
   myGPA
+);
+
+router.get(
+  "/course/:courseId/students",
+  authenticateUser,
+  getStudentsForGPA
 );
 
 

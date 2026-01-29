@@ -16,7 +16,7 @@ export const uploadMarks = async (payload) => {
 };
 
 export const getStudentsByCourse = async (courseId) => {
-  const res = await api.get(`/faculty/courses/${courseId}/students`);
+  const res = await api.get(`/attendance/course/${courseId}/students`);
   return res.data;
 };
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import { getStudentsForGPA } from "../../api/admin.api";
 
 const GPACompute = () => {
   const [courses, setCourses] = useState([]);
@@ -11,12 +12,18 @@ const GPACompute = () => {
   const [academicYear, setAcademicYear] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* =========================
+     LOAD COURSES (ADMIN)
+  ========================= */
   useEffect(() => {
-    api.get("/faculty/courses")
+    api.get("/admin/courses")
       .then(res => setCourses(res.data))
       .catch(console.error);
   }, []);
 
+  /* =========================
+     LOAD STUDENTS (ENROLLED ONLY)
+  ========================= */
   useEffect(() => {
     if (!courseId) {
       setStudents([]);
@@ -24,11 +31,14 @@ const GPACompute = () => {
       return;
     }
 
-    api.get(`/faculty/courses/${courseId}/students`)
-      .then(res => setStudents(res.data))
+    getStudentsForGPA(courseId)
+      .then(setStudents)
       .catch(console.error);
   }, [courseId]);
 
+  /* =========================
+     SUBMIT
+  ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -39,6 +49,7 @@ const GPACompute = () => {
 
     try {
       setLoading(true);
+
       await api.post("/gpa/compute", {
         studentId,
         courseId,
@@ -47,10 +58,12 @@ const GPACompute = () => {
       });
 
       alert("GPA computed successfully");
+
       setStudentId("");
       setSemester("");
       setAcademicYear("");
     } catch (err) {
+      console.error(err);
       alert("Failed to compute GPA");
     } finally {
       setLoading(false);
@@ -113,7 +126,7 @@ const GPACompute = () => {
               <option value="">Select student</option>
               {students.map(s => (
                 <option key={s.student_id} value={s.student_id}>
-                  {s.username}
+                  {s.enrollment_no} — {s.username}
                 </option>
               ))}
             </select>

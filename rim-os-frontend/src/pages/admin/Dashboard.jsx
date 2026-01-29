@@ -5,119 +5,149 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     programs: 0,
     courses: 0,
-    users: 0
+    users: 0,
   });
 
   useEffect(() => {
     Promise.all([
       api.get("/admin/programs"),
       api.get("/admin/courses"),
-      api.get("/admin/users")
-    ])
-      .then(([p, c, u]) => {
-        setStats({
-          programs: p.data.length,
-          courses: c.data.length,
-          users: u.data.length
-        });
-      })
-      .catch(console.error);
+      api.get("/admin/users"),
+    ]).then(([p, c, u]) => {
+      setStats({
+        programs: p.data.length,
+        courses: c.data.length,
+        users: u.data.length,
+      });
+    });
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-6 py-10 space-y-12">
+    <div className="space-y-12">
 
-        {/* HEADER */}
-        <div>
-          <h1 className="text-3xl font-semibold text-slate-900">
-            Admin Dashboard
-          </h1>
-          <p className="text-slate-500 mt-1">
-            Academic system overview & control
-          </p>
-        </div>
-
-        {/* SYSTEM SNAPSHOT */}
-        <section>
-          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-4">
-            System Snapshot
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatTile title="Programs" value={stats.programs} />
-            <StatTile title="Courses" value={stats.courses} />
-            <StatTile title="Users" value={stats.users} />
-          </div>
-        </section>
-
-        {/* PRIMARY SETUP */}
-        <section>
-          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-4">
-            Academic Setup
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <ActionTile title="Departments" subtitle="Organize academic units" />
-            <ActionTile title="Programs" subtitle="Degree & diploma structure" />
-            <ActionTile title="Courses" subtitle="Course catalog management" />
-          </div>
-        </section>
-
-        {/* OPERATIONS */}
-        <section>
-          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-4">
-            Academic Operations
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <ActionTile title="Assign Faculty" subtitle="Faculty-course mapping" />
-            <ActionTile title="Enroll Students" subtitle="Course enrollment" />
-            <ActionTile title="Compute GPA" subtitle="Final grade processing" />
-          </div>
-        </section>
-
-        {/* SYSTEM CONTROL */}
-        <section>
-          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-4">
-            System Control
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <ActionTile
-              title="Approvals"
-              subtitle="New user & access requests"
-              emphasis
-            />
-          </div>
-        </section>
-
+      {/* HEADER */}
+      <div>
+        <h1 className="text-3xl font-bold text-slate-900">
+          Admin Dashboard
+        </h1>
+        <p className="text-slate-500 mt-1">
+          Academic system overview & control
+        </p>
       </div>
+
+      {/* SYSTEM SNAPSHOT */}
+      <section>
+        <p className="text-xs uppercase tracking-wide text-slate-500 mb-4">
+          System Snapshot
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard
+            title="Programs"
+            value={stats.programs}
+            gradient="from-indigo-500 to-indigo-600"
+          />
+          <StatCard
+            title="Courses"
+            value={stats.courses}
+            gradient="from-emerald-500 to-emerald-600"
+          />
+          <StatCard
+            title="Users"
+            value={stats.users}
+            gradient="from-amber-500 to-amber-600"
+          />
+        </div>
+      </section>
+
+      {/* ACADEMIC SETUP */}
+      <DashboardSection title="Academic Setup">
+        <ActionCard
+          title="Departments"
+          subtitle="Organize academic units"
+        />
+        <ActionCard
+          title="Programs"
+          subtitle="Degree & diploma structure"
+        />
+        <ActionCard
+          title="Courses"
+          subtitle="Course catalog management"
+        />
+      </DashboardSection>
+
+      {/* ACADEMIC OPERATIONS */}
+      <DashboardSection title="Academic Operations">
+        <ActionCard
+          title="Assign Faculty"
+          subtitle="Faculty–course mapping"
+        />
+        <ActionCard
+          title="Enroll Students"
+          subtitle="Course enrollment"
+        />
+        <ActionCard
+          title="Compute GPA"
+          subtitle="Final grade processing"
+        />
+      </DashboardSection>
+
+      {/* SYSTEM CONTROL */}
+      <DashboardSection title="System Control">
+        <ActionCard
+          title="Approvals"
+          subtitle="New user & access requests"
+          highlight
+        />
+        <ActionCard
+          title="User"
+          subtitle="Assign users roles and update profile"
+          highlight
+        />
+        <ActionCard
+          title="User Database"
+          subtitle="View all existing users and update their bio"
+          highlight
+        />
+      </DashboardSection>
+
     </div>
   );
 };
 
 /* ---------------- COMPONENTS ---------------- */
 
-const StatTile = ({ title, value }) => (
-  <div className="bg-gray-400 border border-slate-200 rounded-xl p-6">
-    <p className="text-sm text-slate-500">{title}</p>
-    <p className="text-4xl font-semibold text-slate-900 mt-2">
-      {value}
-    </p>
+const StatCard = ({ title, value, gradient }) => (
+  <div
+    className={`rounded-xl p-6 text-white bg-gradient-to-br ${gradient} shadow-sm`}
+  >
+    <p className="text-sm opacity-90">{title}</p>
+    <p className="text-4xl font-bold mt-2">{value}</p>
   </div>
 );
 
-const ActionTile = ({ title, subtitle, emphasis }) => (
+const DashboardSection = ({ title, children }) => (
+  <section>
+    <p className="text-xs uppercase tracking-wide text-slate-500 mb-4">
+      {title}
+    </p>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {children}
+    </div>
+  </section>
+);
+
+const ActionCard = ({ title, subtitle, highlight }) => (
   <button
-    className={`text-left rounded-xl p-6 transition border
+    className={`text-left rounded-xl p-6 border bg-white transition
+      hover:shadow-md hover:-translate-y-0.5
       ${
-        emphasis
-          ? "bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
-          : "bg-white border-slate-200 hover:border-indigo-300"
+        highlight
+          ? "border-indigo-300 bg-indigo-50"
+          : "border-slate-200"
       }`}
   >
-    <p className="font-medium text-slate-900">{title}</p>
+    <p className="font-semibold text-slate-900">{title}</p>
     <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
   </button>
 );

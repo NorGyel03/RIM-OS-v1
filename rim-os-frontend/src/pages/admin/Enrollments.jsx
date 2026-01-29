@@ -5,6 +5,7 @@ import {
   enrollStudent,
 } from "../../api/admin.api";
 
+
 const Enrollments = () => {
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -13,10 +14,22 @@ const Enrollments = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+
   useEffect(() => {
     getAdminStudents().then(setStudents);
     getAdminCourses().then(setCourses);
-  }, []);
+    if (!courseId) {
+    setStudents([]);
+    setStudentId("");
+    return;
+  }
+
+  api.get(`/faculty/courses/${courseId}/students`)
+    .then(res => setStudents(res.data))
+    .catch(console.error);
+
+  }, [courseId]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,16 +93,20 @@ const Enrollments = () => {
             <select
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-slate-300 rounded-md px-3 py-2"
             >
               <option value="">Select student</option>
+
               {students.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.username}
+                <option key={s.student_id} value={s.student_id}>
+                  {s.username} — {s.enrollment_no}
                 </option>
               ))}
             </select>
+
           </div>
+
+
 
           {/* COURSE */}
           <div>
@@ -124,6 +141,7 @@ const Enrollments = () => {
       </div>
     </div>
   );
+  
 };
 
 export default Enrollments;

@@ -99,8 +99,9 @@ const Programs = () => {
           >
             <option value="">Level</option>
             <option value="Diploma">Diploma</option>
-            <option value="UG">UG</option>
             <option value="PG">PG</option>
+            <option value="Masters">Masters</option>
+            
           </select>
 
           <input

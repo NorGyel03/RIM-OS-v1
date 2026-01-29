@@ -93,3 +93,22 @@ export const getGPAForStudent = async (userId) => {
 
   return rows;
 };
+
+export const getStudentsForCourseGPA = async (courseId) => {
+  const result = await pool.query(
+    `
+    SELECT
+      s.id AS student_id,
+      u.username,
+      s.enrollment_no
+    FROM enrollments e
+    JOIN students s ON s.id = e.student_id
+    JOIN users u ON u.id = s.user_id
+    WHERE e.course_id = $1
+    ORDER BY s.enrollment_no
+    `,
+    [courseId]
+  );
+
+  return result.rows;
+};

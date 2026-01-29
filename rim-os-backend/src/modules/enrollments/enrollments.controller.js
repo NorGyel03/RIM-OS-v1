@@ -1,6 +1,22 @@
 import { pool } from "../../config/db.js";
 import { enrollStudent, getStudentEnrollments } from "./enrollments.service.js";
 
+import * as service from "./enrollments.service.js";
+
+export const getStudentsByCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    const students = await service.getStudentsByCourse(courseId);
+
+    res.json(students);
+  } catch (err) {
+    console.error(" Get students by course failed:", err);
+    res.status(500).json({ message: "Failed to load students" });
+  }
+};
+
+
 export const enroll = async (req, res) => {
   const userId = req.user.id;
 

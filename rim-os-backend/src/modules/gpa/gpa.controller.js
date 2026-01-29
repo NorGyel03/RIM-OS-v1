@@ -1,5 +1,6 @@
 import { computeAndStoreFinalScore } from "./gpa.service.js";
 import { getGPAForStudent } from "./gpa.service.js";
+import * as gpaService from "./gpa.service.js";
 
 
 export const computeFinal = async (req, res) => {
@@ -35,5 +36,24 @@ export const myGPA = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch GPA" });
+  }
+};
+
+
+export const getStudentsForGPA = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    if (!courseId) {
+      return res.status(400).json({ message: "Course ID required" });
+    }
+
+    const students =
+      await gpaService.getStudentsForCourseGPA(courseId);
+
+    res.json(students);
+  } catch (err) {
+    console.error("❌ GPA student load error:", err);
+    res.status(500).json({ message: "Failed to load students" });
   }
 };

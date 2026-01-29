@@ -5,6 +5,9 @@ import {
   uploadMark,
 } from "../../api/faculty.api";
 
+import api from "../../api/axios";
+
+
 const MarksForm = () => {
   const [courses, setCourses] = useState([]);
   const [students, setStudents] = useState([]);
@@ -27,13 +30,20 @@ const MarksForm = () => {
      LOAD STUDENTS
   ========================= */
   useEffect(() => {
-    if (courseId) {
-      getStudentsByCourse(courseId).then(setStudents);
-    } else {
-      setStudents([]);
-      setStudentId("");
-    }
+  if (!courseId) {
+    setStudents([]);
+    setStudentId("");
+    return;
+  }
+
+  api
+    .get(`/attendance/course/${courseId}/students`)
+    .then(res => setStudents(res.data))
+    .catch(err =>
+      console.error("Failed to load enrolled students", err)
+    );
   }, [courseId]);
+
 
   /* =========================
      SUBMIT
@@ -110,18 +120,23 @@ const MarksForm = () => {
             Student
           </label>
           <select
-            className="w-full rounded-lg border border-slate-300 p-2.5 disabled:bg-slate-100 disabled:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
             disabled={!courseId}
+            className="w-full rounded-lg border border-slate-300 p-2.5"
           >
             <option value="">Select Student</option>
+
             {students.map((s) => (
-              <option key={s.student_id} value={s.student_id}>
-                {s.username}
+              <option
+                key={s.student_id}       // ✅ unique key
+                value={s.student_id}
+              >
+                {s.enrollment_no} — {s.username}
               </option>
             ))}
           </select>
+
         </div>
 
         {/* COMPONENT */}
