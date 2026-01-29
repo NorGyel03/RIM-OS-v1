@@ -1,5 +1,5 @@
 import express from "express";
-import { addStudent, listStudents } from "./students.controller.js";
+import { addStudent, listStudents, getMyStudentHeader } from "./students.controller.js";
 import { authenticateUser } from "../../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../../middlewares/role.middleware.js";
 import { getMyAttendance } from "./students.controller.js";
@@ -24,6 +24,12 @@ router.get(
   "/attendance",
   authenticateUser,
   getMyAttendance
+);
+
+router.get(
+  "/me/header", 
+  authenticateUser, 
+  getMyStudentHeader
 );
 
 

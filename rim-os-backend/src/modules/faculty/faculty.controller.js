@@ -1,5 +1,6 @@
 import { createFaculty, getFaculty } from "./faculty.service.js";
 import { pool } from "../../config/db.js";
+import * as facultyService from "./faculty.service.js";
 
 export const addFaculty = async (req, res) => {
   await createFaculty(req.body);
@@ -69,3 +70,14 @@ export const getStudentsByCourse = async (req, res) => {
 };
 
 
+
+export const getMyFacultyHeader = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const data = await facultyService.getFacultyHeaderByUserId(userId);
+    res.json(data);
+  } catch (err) {
+    console.error("❌ getMyFacultyHeader:", err);
+    res.status(500).json({ message: "Failed to load faculty header" });
+  }
+};

@@ -1,5 +1,5 @@
 import express from "express";
-import { addFaculty, listFaculty } from "./faculty.controller.js";
+import { addFaculty, listFaculty, getMyFacultyHeader } from "./faculty.controller.js";
 import { authenticateUser } from "../../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../../middlewares/role.middleware.js";
 import { getMyCourses } from "./faculty.controller.js";
@@ -36,5 +36,10 @@ router.get(
   getStudentsByCourse
 );
 
+
+router.get("/me/header", 
+  authenticateUser, 
+  getMyFacultyHeader
+);
 
 export default router;

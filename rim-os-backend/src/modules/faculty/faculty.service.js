@@ -19,3 +19,23 @@ export const getFaculty = async () => {
   );
   return result.rows;
 };
+
+export const getFacultyHeaderByUserId = async (userId) => {
+  const result = await pool.query(
+    `
+    SELECT
+      up.first_name,
+      up.last_name,
+      f.designation,
+      d.name AS department_name
+    FROM users u
+    JOIN faculty f ON f.user_id = u.id
+    JOIN departments d ON f.department_id = d.id
+    LEFT JOIN user_profiles up ON up.user_id = u.id
+    WHERE u.id = $1
+    `,
+    [userId]
+  );
+
+  return result.rows[0];
+};
