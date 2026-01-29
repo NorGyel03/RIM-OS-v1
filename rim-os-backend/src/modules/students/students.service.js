@@ -48,3 +48,22 @@ export const getStudents = async () => {
 
   return result.rows;
 };
+
+
+export const getStudentHeaderByUserId = async (userId) => {
+  const result = await pool.query(
+    `
+    SELECT
+      up.first_name,
+      up.last_name,
+      s.enrollment_no
+    FROM users u
+    JOIN students s ON s.user_id = u.id
+    LEFT JOIN user_profiles up ON up.user_id = u.id
+    WHERE u.id = $1
+    `,
+    [userId]
+  );
+
+  return result.rows[0];
+};

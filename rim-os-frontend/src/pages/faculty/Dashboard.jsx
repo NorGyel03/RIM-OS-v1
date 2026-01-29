@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import FacultyGreeting from "../../components/FacultyGreeting";
 
 const FacultyDashboard = () => {
   return (
@@ -6,6 +7,8 @@ const FacultyDashboard = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-black">
+          <FacultyGreeting />
+
           Faculty Dashboard
         </h1>
         <p className="text-slate-500 mt-1">

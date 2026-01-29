@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import StudentGreeting from "../../components/StudentGreeting";
 
 const StudentDashboard = () => {
   const [summary, setSummary] = useState({
@@ -41,8 +42,11 @@ const StudentDashboard = () => {
   return (
     <div className="space-y-8">
       {/* HEADER */}
+
       <div>
         <h1 className="text-3xl font-semibold text-slate-900">
+          <StudentGreeting />
+
           Student Dashboard
         </h1>
         <p className="text-slate-500 mt-1">

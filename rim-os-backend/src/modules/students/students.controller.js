@@ -1,5 +1,7 @@
 import { createStudent, getStudents } from "./students.service.js";
 import { pool } from "../../config/db.js";
+import * as studentService from "./students.service.js";
+
 
 export const addStudent = async (req, res) => {
   await createStudent(req.body);
@@ -96,5 +98,17 @@ export const getMyAttendance = async (req, res) => {
   } catch (err) {
     console.error("Failed to load attendance stats", err);
     res.status(500).json({ message: "Failed to load attendance stats" });
+  }
+};
+
+
+export const getMyStudentHeader = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const data = await studentService.getStudentHeaderByUserId(userId);
+    res.json(data);
+  } catch (err) {
+    console.error("❌ getMyStudentHeader:", err);
+    res.status(500).json({ message: "Failed to load student header" });
   }
 };
