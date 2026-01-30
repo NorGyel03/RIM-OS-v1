@@ -1,4 +1,10 @@
 import express from "express";
+import { activateUser } from "./admin.controller.js";
+import authMiddleware from "../../middlewares/auth.middleware.js";
+import adminOnly from "../../middlewares/adminOnly.middleware.js";
+
+
+
 
 /* Controllers */
 import {
@@ -16,6 +22,7 @@ import {
   listPendingUsers,
   approveUser,
   deleteUser,
+  listUsersForAdmin
 
 } from "./admin.controller.js";
 
@@ -90,6 +97,20 @@ router.get("/user-status", adminController.getUserStatuses);
 router.post(
   "/create-student-profile",
   adminController.createStudentProfile
+);
+
+router.patch(
+  "/users/:userId/activate",
+  authMiddleware,
+  adminOnly,
+  activateUser
+);
+
+router.get(
+  "/users",
+  authMiddleware,
+  adminOnly,
+  listUsersForAdmin
 );
 
 

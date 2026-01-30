@@ -17,6 +17,8 @@ import adminRoutes from "./modules/admin/admin.routes.js";
 import departmentRoutes from "./modules/departments/departments.routes.js";
 import facultyCourseRoutes from "./modules/facultyCourses/facultyCourses.routes.js";
 import userProfileRoutes from "./modules/userProfiles/userProfiles.routes.js";
+import userProfilesRoutes from "./modules/userProfiles/userProfiles.routes.js";
+
 
 dotenv.config();
 
@@ -51,6 +53,7 @@ app.use("/api/admin", adminRoutes);
 
 app.use("/api/departments", departmentRoutes);
 app.use("/api/faculty-courses", facultyCourseRoutes);
+app.use("/api/user-profiles", userProfilesRoutes);
 
 /* =========================
    TEST ROUTE (OPTIONAL)

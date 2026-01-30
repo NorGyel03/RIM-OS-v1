@@ -77,6 +77,7 @@ const AppRoutes = () => {
           <Route path="pending-users" element={<PendingUsers />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="user-database" element={<UserList />} />
+
         </Route>
       </Route>
 

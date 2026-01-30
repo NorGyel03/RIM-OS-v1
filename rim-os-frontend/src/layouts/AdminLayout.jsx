@@ -24,7 +24,6 @@ const AdminLayout = () => {
         <Link className="hover:text-slate-900" to="/admin/approvals">Approvals</Link>
         <Link className="hover:text-slate-900" to="/admin/users">Users</Link>
         <Link className="hover:text-slate-900" to="/admin/user-database">User Database</Link>
-
       </nav>
 
       {/* CONTENT */}

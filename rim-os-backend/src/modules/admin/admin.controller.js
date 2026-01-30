@@ -1,5 +1,6 @@
 import * as adminService from "./admin.service.js";
 import { createProgram as createProgramService } from "./admin.service.js";
+import { pool } from "../../config/db.js";
 
 
 /* ---------- PROGRAMS ---------- */
@@ -77,7 +78,6 @@ export const enrollStudent = async (req, res) => {
 
 /*------------CREATE STUDENT USERS------------*/
 import bcrypt from "bcrypt";
-import { pool } from "../../config/db.js";
 
 export const createStudent = async (req, res) => {
   const { username, password, programId, admissionYear } = req.body;
@@ -375,3 +375,26 @@ export const getUserStatuses = async (req, res) => {
   const users = await adminService.getUserProfileStatus();
   res.json(users);
 };
+
+
+export const activateUser = async (req, res) => {
+  const { userId } = req.params;
+
+  await pool.query(
+    `UPDATE users SET is_active = true WHERE id = $1`,
+    [userId]
+  );
+
+  res.json({ message: "User activated successfully" });
+};
+
+export const listUsersForAdmin = async (req, res) => {
+  const result = await pool.query(`
+    SELECT id, username, role, is_active
+    FROM users
+    ORDER BY created_at DESC
+  `);
+
+  res.json(result.rows);
+};
+

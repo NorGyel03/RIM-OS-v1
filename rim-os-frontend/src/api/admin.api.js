@@ -48,3 +48,15 @@ export const getStudentsForGPA = async (courseId) => {
   );
   return res.data;
 };
+
+
+export const getAdminUsers = async () => {
+  const res = await api.get("/admin/users");
+  return res.data;
+};
+
+export const activateUser = async (userId) => {
+  await api.patch(`/admin/users/${userId}/activate`);
+};
+
+
