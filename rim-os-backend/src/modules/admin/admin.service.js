@@ -87,16 +87,19 @@ export const getAllCourses = async () => {
 
 /* ---------- STUDENTS ---------- */
 export const getStudents = async () => {
-  const { rows } = await pool.query(
-    `
-    SELECT s.id, u.username
+  const result = await pool.query(`
+    SELECT
+      s.id AS student_id,
+      u.username,
+      s.enrollment_no
     FROM students s
     JOIN users u ON u.id = s.user_id
-    ORDER BY u.username
-    `
-  );
-  return rows;
+    ORDER BY s.enrollment_no
+  `);
+
+  return result.rows;
 };
+
 
 /* ---------- ENROLLMENTS ---------- */
 export const enrollStudent = async (studentId, courseId) => {

@@ -361,6 +361,11 @@ export const createFacultyProfile = async (req, res) => {
 };
 
 
+export const getAdminStudents = async (req, res) => {
+  const students = await adminService.getStudents();
+  res.json(students);
+};
+
 export const getStudents = async (req, res) => {
   const students = await adminService.getAdminStudents();
   res.json(students);

@@ -69,3 +69,25 @@ export const autoEnrollStudent = async (
     );
   }
 };
+
+export const getStudentsByCourse = async (courseId) => {
+  const result = await pool.query(
+    `
+    SELECT
+      s.id AS student_id,
+      s.enrollment_no,
+      u.username
+    FROM enrollments e
+    JOIN students s ON e.student_id = s.id
+    JOIN users u ON s.user_id = u.id
+    WHERE e.course_id = $1
+      AND e.status = 'enrolled'
+    ORDER BY s.enrollment_no
+    `,
+    [courseId]
+  );
+
+  return result.rows;
+};
+
+

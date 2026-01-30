@@ -14,22 +14,23 @@ const Enrollments = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+console.log(
+  "STUDENTS FOR ENROLL:",
+  students.map(s => ({
+    student_id: s.student_id,
+    enrollment_no: s.enrollment_no,
+    username: s.username
+  }))
+);
+
+
+
 
   useEffect(() => {
     getAdminStudents().then(setStudents);
     getAdminCourses().then(setCourses);
-    if (!courseId) {
-    setStudents([]);
-    setStudentId("");
-    return;
-  }
+  }, []);
 
-  api.get(`/faculty/courses/${courseId}/students`)
-    .then(res => setStudents(res.data))
-    .catch(console.error);
-
-  }, [courseId]);
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,24 +88,35 @@ const Enrollments = () => {
         >
           {/* STUDENT */}
           <div>
-            <label className="block text-sm text-slate-600 mb-1">
+            <label
+              htmlFor="studentSelect"
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
               Student
             </label>
+
             <select
+              id="studentSelect"
+              name="studentSelect"
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
-              className="w-full border border-slate-300 rounded-md px-3 py-2"
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
             >
               <option value="">Select student</option>
 
-              {students.map((s) => (
-                <option key={s.student_id} value={s.student_id}>
-                  {s.username} — {s.enrollment_no}
+              {students.map((s, index) => (
+                <option
+                  key={s.student_id ?? `fallback-${index}`}   // ✅ NEVER undefined
+                  value={s.student_id}
+                >
+                  {s.enrollment_no} — {s.username}
                 </option>
               ))}
             </select>
 
           </div>
+
+
 
 
 
