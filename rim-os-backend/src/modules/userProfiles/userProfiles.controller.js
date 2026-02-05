@@ -108,18 +108,64 @@ export const createUserProfile = async (req, res) => {
 /* =========================
    UPDATE PROFILE
 ========================= */
-export const updateUserProfile = async (req, res) => {
-  try {
-    const userId = req.user.id;
 
-    await userProfileService.updateUserProfile(
-      userId,
-      req.body
+export const updateUserProfile = async (req, res) => {
+  const { userId } = req.params;
+  const {
+    firstName,
+    middleName,
+    lastName,
+    gender,
+    dateOfBirth,
+    email,
+    phone,
+    address,
+    nationality,
+  } = req.body;
+
+  try {
+    const result = await pool.query(
+      `
+      UPDATE user_profiles
+      SET
+        first_name = $1,
+        middle_name = $2,
+        last_name = $3,
+        gender = $4,
+        date_of_birth = $5,
+        email = $6,
+        phone = $7,
+        address = $8,
+        nationality = $9,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = $10
+      RETURNING *
+      `,
+      [
+        firstName,
+        middleName || null,
+        lastName,
+        gender || null,
+        dateOfBirth || null,
+        email || null,
+        phone || null,
+        address || null,
+        nationality || null,
+        userId,
+      ]
     );
 
-    res.json({ message: "Profile updated" });
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.json({
+      message: "Profile updated successfully",
+      profile: result.rows[0],
+    });
+
   } catch (err) {
-    console.error("❌ Update profile error:", err);
-    res.status(500).json({ message: err.message });
+    console.error("UPDATE PROFILE ERROR:", err);
+    res.status(500).json({ message: "Failed to update profile" });
   }
 };

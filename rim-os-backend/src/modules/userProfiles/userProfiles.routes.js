@@ -18,5 +18,6 @@ router.put("/me", authenticateUser, updateUserProfile);
 /* 👨‍💼 ADMIN / SHARED */
 router.get("/:userId", authenticateUser, getUserProfile);
 router.post("/", createUserProfile);
+router.put("/:userId",authenticateUser ,updateUserProfile);
 
 export default router;
